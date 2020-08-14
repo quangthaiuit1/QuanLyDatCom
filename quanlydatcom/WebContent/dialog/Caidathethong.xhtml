@@ -1,0 +1,58 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:pe="http://primefaces.org/ui/extensions"
+	xmlns:ui="http://java.sun.com/jsf/facelets">
+<ui:composition>
+	<p:dialog widgetVar="caidathethong" modal="true" resizable="false"
+		width="400" closeOnEscape="true" header="Người dùng cài đặt">
+		<h:form id="caidat">
+			<p:fieldset id="FStq" styleClass="group ">
+				<h:panelGrid columns="1" cellpadding="5"
+					style="width:330px; float:right"
+					columnClasses="thirty-percent, seven-percent">
+					<p:outputLabel value="Định dạng ngày" />
+					<p:selectOneMenu styleClass="seOnMe95" panelStyle="width:180px"
+						value="#{applicationBean.cf.formatDate}">
+						<f:selectItem itemLabel="dd/MM/yyyy (ex: 20/03/2016)"
+							itemValue="dd/MM/yyyy" />
+						<f:selectItem
+							itemLabel="dd/MM/yyyy hh:mm:ss (ex: 20/03/2016 10:32:16)"
+							itemValue="dd/MM/yyyy hh:mm:ss" />
+						<f:selectItem itemLabel="d/M/yyyy (ex: 20/3/2016, 5/3/2016)"
+							itemValue="d/M/yyyy" />
+						<f:selectItem
+							itemLabel="d/M/yyyy hh:mm:ss (ex: 20/3/2016 10:32:16, 5/3/2016 10:32:16)"
+							itemValue="d/M/yyyy hh:mm:ss" />
+						<f:selectItem itemLabel="yyyy/MM/dd (ex: 2016/03/20)"
+							itemValue="yyyy/MM/dd" />
+						<f:selectItem
+							itemLabel="yyyy/MM/dd hh:mm:ss(ex: 2016/03/20 10:32:16)"
+							itemValue="yyyy/MM/dd hh:mm:ss" />
+					</p:selectOneMenu>
+					<p:outputLabel value="Ngăn cách hàng ngàn, thập phân" />
+					<p:selectOneMenu styleClass="seOnMe95" panelStyle="width:180px"
+						value="#{applicationBean.cf.decimalSeparator}">
+						<f:selectItem itemLabel=", - . (ex: 14,386.580  2,234,623,433.95)"
+							itemValue="." />
+						<f:selectItem itemLabel=". - , (ex: 14.386,580  2.234.623.433,95)"
+							itemValue="," />
+					</p:selectOneMenu>
+					<p:outputLabel value="Số lẻ hiển thị" />
+					<p:spinner min="0" max="10"
+						value="#{applicationBean.cf.decimalNumber}" />
+				</h:panelGrid>
+				<div style="clear: both;"></div>
+				<br />
+				<p:commandButton value="Cập nhật" id="save" icon="ui-icon-disk"
+					action="#{applicationBean.saveSettingPerson}"
+					styleClass="greenbutton" update=":messages,:caidat" />
+				<p:separator />
+				<p:outputLabel style="color:#b3b2b2" value="Chú ý: Đăng nhập lại hệ thống để áp dụng cài đặt." />
+			</p:fieldset>
+		</h:form>
+	</p:dialog>
+</ui:composition>
+</html>

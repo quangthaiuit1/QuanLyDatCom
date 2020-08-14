@@ -1,0 +1,42 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:pe="http://primefaces.org/ui/extensions"
+	xmlns:ui="http://java.sun.com/jsf/facelets">
+<ui:composition>
+	<p:dialog widgetVar="doimatkhau" modal="true" resizable="false"
+		width="400" closeOnEscape="true" header="Đổi mật khẩu">
+		<h:form id="doimatkhau">
+			<p:fieldset id="FStq" styleClass="group ">
+				<h:panelGrid columns="1" cellpadding="5"
+					style="width:330px; float:right"
+					columnClasses="thirty-percent, seven-percent">
+					<p:outputLabel value="Mật khẩu cũ" for="emailm" />
+					<p:password value="#{applicationBean.changePassword.passwordOld}"
+						id="emailm" styleClass="inputwidthonehundresspercent notUpCa"
+						required="true" requiredMessage="Điền dầy đủ thông tin!" />
+					<p:outputLabel value="Mật khẩu mới" for="passm1" />
+					<p:password value="#{applicationBean.changePassword.passwordNew}"
+						match="pwd2" id="passm1"
+						styleClass="inputwidthonehundresspercent notUpCa" required="true"
+						requiredMessage="Mật khẩu không đúng">
+						<f:validateLength minimum="2" />
+					</p:password>
+					<p:outputLabel value="Nhập lại mật khẩu mới" for="pwd2" />
+					<p:password id="pwd2"
+						value="#{applicationBean.changePassword.passwordNew}"
+						styleClass="inputwidthonehundresspercent notUpCa" required="true"
+						requiredMessage="Mật khẩu không đúng" />
+				</h:panelGrid>
+				<div style="clear: both;"></div>
+				<br />
+				<p:commandButton value="Cập nhật" id="save" icon="ui-icon-disk"
+					styleClass="greenbutton" update=":messages"
+					actionListener="#{applicationBean.changePassword}" />
+			</p:fieldset>
+		</h:form>
+	</p:dialog>
+</ui:composition>
+</html>

@@ -1,0 +1,25 @@
+.myanimation{
+    position: relative;
+    animation-name: example;
+    animation-duration: 0.3s;
+    animation-iteration-count: infinite;
+    
+     -webkit-animation-name: example; /* Safari 4.0 - 8.0 */
+    -webkit-animation-duration: 0.3s; /* Safari 4.0 - 8.0 */
+    -webkit-animation-iteration-count: infinite; /* Safari 4.0 - 8.0 */
+}
+@keyframes example {
+    0%   {transform: rotate(-12deg);}
+    25%  {transform: rotate(0deg);}
+    50%  {transform: rotate(12deg);}
+    75%  {transform: rotate(0deg);}
+    100% {transform: rotate(-12deg);}
+}
+/* Safari 4.0 - 8.0 */
+@-webkit-keyframes example {
+       0%   {transform: rotate(-12deg);}
+    25%  {transform: rotate(0deg);}
+    50%  {transform: rotate(12deg);}
+    75%  {transform: rotate(0deg);}
+    100% {transform: rotate(-12deg);}
+}

@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:c="http://java.sun.com/jsp/jstl/core"
+	xmlns:pe="http://primefaces.org/ui/extensions"
+	xmlns:h="http://java.sun.com/jsf/html" template="/pages/home.xhtml">
+	<ui:define name="content">
+		<h3 style="margin: 0px">Nhóm năng lực</h3>
+		<p:separator />
+		<h:form id="menuformid">
+			<p:dataTable value="#{nhomNangLucBean.nhomNangLucs}"
+				styleClass="tableformat" paginatorPosition="bottom"
+				rowsPerPageTemplate="40,60,80" paginator="true" rows="40"
+				rowKey="#{item.id}" selection="#{nhomNangLucBean.nhomNangLucEdit}"
+				scrollable="true" selectionMode="single"
+				widgetVar="datatb" resizableColumns="true" var="item">
+				<p:ajax event="rowDblselect" update=":fchitiet" oncomplete=""
+					listener="#{nhomNangLucBean.showEdit()}" />
+				<p:column headerText="ID" width="70" style="text-align:center">
+					<h:outputText value="#{item.id}" />
+				</p:column>
+				<p:column headerText="Mã" width="100" style="text-align:center">
+					<h:outputText value="#{item.ma}" />
+				</p:column>
+				<p:column headerText="Tên">
+					<h:outputText value="#{item.ten}" />
+				</p:column>
+				<p:column headerText="NL công ty" width="220" style="text-align:center">
+					<p:selectBooleanCheckbox value="#{item.nangluccongty}"
+						disabled="true" />
+				</p:column>
+				<f:facet name="footer">
+					<p:commandButton value="Tạo mới" oncomplete="PF('chitiet').show()"
+						style="float:left" styleClass="btnew"
+						action="#{nhomNangLucBean.reset()}" update=":fchitiet,:menuformid" />
+					<div style="clear: both;" />
+				</f:facet>
+			</p:dataTable>
+		</h:form>
+		<p:dialog widgetVar="chitiet" resizable="false" width="500"
+			closeOnEscape="true" header="Chi tiết">
+			<h:form id="fchitiet">
+				<p:panelGrid columns="2" columnClasses="w40,w60" style="width:100%">
+					<p:outputLabel value="Mã*" />
+					<p:inputText value="#{nhomNangLucBean.nhomNangLuc.ma}" />
+					<p:outputLabel value="Tên*" />
+					<p:inputText rows="3" value="#{nhomNangLucBean.nhomNangLuc.ten}" />
+					<p:outputLabel value="Nhóm năng lực công ty" />
+					<p:selectBooleanCheckbox value="#{nhomNangLucBean.nhomNangLuc.nangluccongty}" />
+				</p:panelGrid>
+				<p:separator />
+				<p:commandButton value="Lưu/Cập nhật" styleClass="btsave"
+					action="#{nhomNangLucBean.createOrUpdate()}"
+					update=":messages,:fchitiet,:menuformid" />
+				<p:commandButton value="Tạo mới" action="#{nhomNangLucBean.reset()}"
+					styleClass="btnew" update=":fchitiet,:menuformid" />
+				<p:commandButton value="Xóa" action="#{nhomNangLucBean.delete()}"
+					styleClass="btdelete" update=":fchitiet,:menuformid">
+					<p:confirm header="Xác nhận" message="Bạn có chắc muốn xoá không?"
+						icon="ui-icon-alert" />
+				</p:commandButton>
+			</h:form>
+		</p:dialog>
+	</ui:define>
+</ui:composition>

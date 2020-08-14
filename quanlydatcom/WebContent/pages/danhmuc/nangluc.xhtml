@@ -1,0 +1,147 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:c="http://java.sun.com/jsp/jstl/core"
+	xmlns:pe="http://primefaces.org/ui/extensions"
+	xmlns:h="http://java.sun.com/jsf/html" template="/pages/home.xhtml">
+	<ui:define name="content">
+		<h3 style="margin: 0px">Từ điển năng lực</h3>
+		<p:separator />
+		<h:form id="menuformid">
+			<p:selectOneMenu value="#{nangLucBean.departmentSearch}"
+				converter="abstractConverter" effect="fade" var="t"
+				style="width:150px;" id="iddeps" filter="true"
+				filterMatchMode="custom" filterFunction="customFilter">
+				<p:ajax listener="#{nangLucBean.search()}" process="@this"
+					update=":menuformid" />
+				<f:selectItem itemLabel="--PHÒNG BAN--" itemValue="#{null}" />
+				<f:selectItems value="#{nangLucBean.departmentSearchs}" var="item"
+					itemLabel="#{item.name}" itemValue="#{item}" />
+				<p:column>
+					<h:outputText value="#{t.code}" />
+				</p:column>
+				<p:column>
+					<h:outputText value="#{t.showAllNameDepart()}" escape="false" />
+				</p:column>
+			</p:selectOneMenu>
+			<p:commandButton value="Nhập dữ liệu chung" styleClass="btsearch"
+				style="float:right" oncomplete="PF('nanglucchung').show()" />
+			<p:commandButton value="Nhập năng lực chuyên môn"
+				disabled="#{nangLucBean.departmentSearch==null}"
+				update=":fnapdulieuchuyenmon" styleClass="btsearch"
+				style="float:right" oncomplete="PF('nanglucchuyenmon').show()" />
+			<div style="clear: both" />
+			<p:dataTable value="#{nangLucBean.nangLucs}" styleClass="tableformat"
+				paginatorPosition="bottom" rowsPerPageTemplate="60,80,100"
+				paginator="true" rows="80" rowKey="#{item.id}"
+				expandableRowGroups="true" sortBy="#{item.nhomNangLuc.ma}"
+				selection="#{nangLucBean.nangLucEdit}" rowIndexVar="rowIndex"
+				scrollable="true" selectionMode="single"
+				widgetVar="datatb" resizableColumns="true" var="item">
+				<p:ajax event="rowDblselect" update=":fchitiet" oncomplete=""
+					listener="#{nangLucBean.showEdit()}" />
+				<p:headerRow>
+					<p:column style="background:#2196f338">
+						<h:outputText value="" />
+					</p:column>
+					<p:column
+						style="background:#2196f338;font-size: 1.3em;text-align:center"
+						width="50">
+						<h:outputText value="#{item.nhomNangLuc.ma}" />
+					</p:column>
+					<p:column
+						style="background:#2196f338;font-size: 1.3em;padding: 5px;">
+						<h:outputText value="#{item.nhomNangLuc.ten}" />
+					</p:column>
+				</p:headerRow>
+				<p:column headerText="STT" style="text-align:center" width="50">
+					<h:outputText value="#{rowIndex+1}" />
+				</p:column>
+				<p:column headerText="Mã" width="150" style="text-align:center">
+					<h:outputText value="#{item.ma}" />
+				</p:column>
+				<p:column headerText="Năng lực">
+					<h:outputText value="#{item.ten}" />
+				</p:column>
+				<f:facet name="footer">
+					<div style="clear: both;" />
+				</f:facet>
+			</p:dataTable>
+		</h:form>
+		<p:dialog widgetVar="chitiet" resizable="false" width="500"
+			closeOnEscape="true" header="Chi tiết">
+			<h:form id="fchitiet">
+				<p:panelGrid columns="2" columnClasses="w30,w70" style="width:100%">
+					<p:outputLabel value="Mã*" />
+					<p:inputText value="#{nangLucBean.nangLuc.ma}" />
+					<p:outputLabel value="Tên*" />
+					<p:inputTextarea rows="2" value="#{nangLucBean.nangLuc.ten}" />
+					<p:outputLabel value="Định nghĩa*" />
+					<p:inputTextarea rows="2" value="#{nangLucBean.nangLuc.dinhnghia}" />
+					<p:outputLabel value="Tối thiểu" />
+					<p:inputTextarea rows="2" value="#{nangLucBean.cttoithieu.noidung}" />
+					<p:outputLabel value="Cơ bản" />
+					<p:inputTextarea rows="2" value="#{nangLucBean.ctcoban.noidung}" />
+					<p:outputLabel value="Đạt yêu cầu" />
+					<p:inputTextarea rows="2"
+						value="#{nangLucBean.ctdatyeucau.noidung}" />
+					<p:outputLabel value="Thành thạo" />
+					<p:inputTextarea rows="2"
+						value="#{nangLucBean.ctthanhthao.noidung}" />
+					<p:outputLabel value="Xuất sắc" />
+					<p:inputTextarea rows="2" value="#{nangLucBean.ctxuatsac.noidung}" />
+					<p:outputLabel value="Disable" />
+					<p:selectBooleanCheckbox value="#{nangLucBean.nangLuc.disable}" />
+
+				</p:panelGrid>
+				<p:separator />
+				<p:commandButton value="Cập nhật" styleClass="btsave"
+					action="#{nangLucBean.update()}"
+					update=":messages,:fchitiet,:menuformid" />
+				<p:commandButton value="Xóa" action="#{nangLucBean.delete()}"
+					styleClass="btdelete" update=":menuformid">
+					<p:confirm header="Xác nhận" message="Bạn có chắc muốn xoá không?"
+						icon="ui-icon-alert" />
+				</p:commandButton>
+			</h:form>
+		</p:dialog>
+		<p:dialog widgetVar="nanglucchung" modal="true"
+			header="Nhập năng lực chung">
+			<h:form enctype="multipart/form-data">
+				<p:tooltip for="fromexcel" value="Nhập từ file Excel" />
+				<p:fileUpload fileUploadListener="#{nangLucBean.doctuExcel}"
+					id="fromexcel" cancelLabel="Xoá file" mode="advanced"
+					dragDropmaterport="false" uploadLabel="Tải lên" label="Chọn file"
+					update="@form,:menuformid,:messages" fileLimit="1" process="@form"
+					allowTypes="/(\.|\/)(xlsx|XLSX)$/" />
+				<p:commandButton value="Xem file excel mẫu" immediate="true"
+					styleClass="btlink" style="float:right"
+					onclick="monitorDownload( showStatus , hideStatus)"
+					actionListener="#{nangLucBean.filemau()}" />
+			</h:form>
+		</p:dialog>
+		<p:dialog widgetVar="nanglucchuyenmon" modal="true"
+			header="Nhập năng lực chuyên môn">
+			<h:form id="fnapdulieuchuyenmon">
+				<p:fieldset
+					style="margin-bottom: 20px;background:#4a789ba8; text-align:center;color:white">
+					<p:outputLabel value="#{nangLucBean.departmentSearch.name}" />
+				</p:fieldset>
+			</h:form>
+			<h:form enctype="multipart/form-data">
+				<p:tooltip for="fromexcel" value="Nhập từ file Excel" />
+				<p:fileUpload fileUploadListener="#{nangLucBean.doctuExcelchuyenmon}"
+					id="fromexcel" cancelLabel="Xoá file" mode="advanced"
+					dragDropmaterport="false" uploadLabel="Tải lên" label="Chọn file"
+					update="@form,:menuformid,:messages" fileLimit="1" process="@form"
+					allowTypes="/(\.|\/)(xlsx|XLSX)$/" />
+				<p:commandButton value="Xem file excel mẫu" immediate="true"
+					styleClass="btlink" style="float:right"
+					onclick="monitorDownload( showStatus , hideStatus)"
+					actionListener="#{nangLucBean.filemauchuyenmon()}" />
+			</h:form>
+		</p:dialog>
+	</ui:define>
+</ui:composition>

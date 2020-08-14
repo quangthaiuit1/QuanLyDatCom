@@ -1,0 +1,282 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:c="http://java.sun.com/jsp/jstl/core">
+<h:head>
+	<title>LIXCO</title>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<h:outputStylesheet name="css/style.css" />
+	<h:outputScript src="js/jquery-1.8.2.min.js" />
+	<h:outputStylesheet name="css/animation.css" />
+	<script>
+	//<![CDATA[
+	PrimeFaces.locales['vi'] = {     closeText: 'Tắt', prevText: 'Tháng trước', nextText: 'Tháng sau', monthNames: ['Tháng 1', 'Tháng 2', 'Tháng 3', 'Tháng 4', 'Tháng 5', 'Tháng 6', 'Tháng 7', 'Tháng 8', 'Tháng 9', 'Tháng 10', 'Tháng 11', 'Tháng 12'], monthNamesShort: ['Tháng 1', 'Tháng 2', 'Tháng 3', 'Tháng 4', 'Tháng 5', 'Tháng 6', 'Tháng 7', 'Tháng 8', 'Tháng 9', 'Tháng 10', 'Tháng 11', 'Tháng 12' ], dayNames: ['Chúa Nhựt', 'Thứ Hai', 'Thứ Ba', 'Thứ Tư', 'Thứ Năm', 'Thứ Sáu', 'Thứ Bảy'], dayNamesShort: ['CN', 'Hai', 'Ba', 'Tư', 'Năm', 'Sáu', 'Bảy'], dayNamesMin: ['CN', 'T2', 'T3', 'T4', 'T5', 'T6', 'T7'], weekHeader: 'Tuần', firstDay: 1, isRTL: false, showMonthAfterYear: false, yearSuffix:'', timeOnlyTitle: 'Chọn giờ', timeText: 'Giờ', hourText: 'Giờ', minuteText: 'Phút', secondText: 'Giây', currentText: 'Giờ hiện hành', ampm: false, month: 'Tháng', week: 'Tuần', day: 'Ngày', allDayText: 'Cả ngày' };
+	
+
+	function cleanupTooltips(){
+	    $('.ui-tooltip').each(function(index, elem){
+	        $(elem).hide();
+	    });
+	}
+	// Xuat report, excel 
+	function openreport(idp) {
+		document.getElementById(idp).click();
+	}
+	function openexcel(idp) {
+		document.getElementById(idp).click();
+	}
+	
+	var showHeader=#{applicationBean.cf.showHeader}
+	$(document).ready(function(){
+		if(!showHeader){
+			addclass();
+		}else{
+			removeclass();
+		}
+	});
+	
+	function addclass(){
+			$('#headerid').addClass('hidenHeader');
+			$( '.hidenbutton' ).css( "display","none" );
+			$( '.showbutton' ).css( "display","block" );
+
+	}
+	function removeclass(){
+		$('div').removeClass('hidenHeader');
+		$( '.hidenbutton' ).css( "display","block" );
+		$( '.showbutton' ).css( "display","none" );
+
+	}
+	
+	function customFilter(itemLabel, filterValue) {
+		itemLabel_create = itemLabel.replace(/à|á|ạ|ả|ã|â|ầ|ấ|ậ|ẩ|ẫ|ă|ằ|ắ|ặ|ẳ|ẵ/g, "a").replace(/\ /g, '-').replace(/đ/g, "d").replace(/đ/g, "d").replace(/ỳ|ý|ỵ|ỷ|ỹ/g,"y").replace(/ù|ú|ụ|ủ|ũ|ư|ừ|ứ|ự|ử|ữ/g,"u").replace(/ò|ó|ọ|ỏ|õ|ô|ồ|ố|ộ|ổ|ỗ|ơ|ờ|ớ|ợ|ở|ỡ.+/g,"o").replace(/è|é|ẹ|ẻ|ẽ|ê|ề|ế|ệ|ể|ễ.+/g, "e").replace(/ì|í|ị|ỉ|ĩ/g,"i");
+		filterValue_create = filterValue.replace(/à|á|ạ|ả|ã|â|ầ|ấ|ậ|ẩ|ẫ|ă|ằ|ắ|ặ|ẳ|ẵ/g, "a").replace(/\ /g, '-').replace(/đ/g, "d").replace(/đ/g, "d").replace(/ỳ|ý|ỵ|ỷ|ỹ/g,"y").replace(/ù|ú|ụ|ủ|ũ|ư|ừ|ứ|ự|ử|ữ/g,"u").replace(/ò|ó|ọ|ỏ|õ|ô|ồ|ố|ộ|ổ|ỗ|ơ|ờ|ớ|ợ|ở|ỡ.+/g,"o").replace(/è|é|ẹ|ẻ|ẽ|ê|ề|ế|ệ|ể|ễ.+/g, "e").replace(/ì|í|ị|ỉ|ĩ/g,"i");
+		 var result = itemLabel_create.search(filterValue_create);
+		 if(result==-1){
+			return false;
+		 }else{
+			return true;
+		}
+	}
+
+
+	
+
+	$(document).on('keydown', 'form input[type="text"]', function(e) {
+
+		// Viet chu hoa cac o nhap co class upper
+		 $('.upper').keyup(function() {
+		        this.value = this.value.toUpperCase();
+		    });
+
+		  //Nhay o input tiep theo khi Enter va Shift+Enter
+		var self = $(this)
+		  , form = self.parents('form:eq(0)')
+		  , focusable
+		  , next
+		  , prev
+		  ;
+		if (e.shiftKey) {
+		 if (e.keyCode == 13) {
+		     focusable =   form.find('input,a,select,button,textarea').filter(':visible');
+		     prev = focusable.eq(focusable.index(this)-1); 
+
+		     if (prev.length) {
+		        prev.focus();
+		        next.select();
+		     } else {
+		        form.submit();
+		    }
+		     return false;
+		  }
+		}
+		  else
+		if (e.keyCode == 13) {
+		    focusable = form.find('input,a,select,button,textarea').filter(':visible');
+		    next = focusable.eq(focusable.index(this)+1);
+		    if (next.length) {
+		        next.focus();
+		        next.select();
+		    } else {
+		        form.submit();
+		    }
+		    return false;
+		}
+		
+		
+ 	});
+	//]]>
+
+		
+		
+	</script>
+</h:head>
+<h:body>
+
+	<p:ajaxStatus
+		style="display:block;margin-top: 10%;z-index: 500; margin-left: 47%; position: absolute;"
+		onstart="PF('progressPanel').show();"
+		oncomplete="cleanupTooltips();PF('progressPanel').close();"
+		id="ajaxStatusPanel">
+	</p:ajaxStatus>
+	<style>
+#primefacesmessagedlg {
+	z-index: 2019 !important;
+}
+
+.progressPanel {
+	padding: 0px;
+}
+
+.progressPanel .ui-panel-content {
+	padding: 0px;
+}
+
+.progressPanel .ui-progressbar.ui-widget-content {
+	margin-bottom: 0px;
+}
+</style>
+	<h:form>
+		<p:dialog widgetVar="thongbao" styleClass="noticedialog"
+			header="Thông báo" style="height:10px" resizable="false">
+			<h:outputText value="Không có dữ liệu phát sinh!"
+				style="color: red;font-size: 14px;" />
+			<br />
+			<p:separator />
+			<p:commandButton value="OK" style="margin-left:50px"
+				onclick="PF('thongbao').hide();" styleClass="ui-confirmdialog-yes"
+				icon="ui-icon-check" />
+		</p:dialog>
+	</h:form>
+	<h:form style="display:none;">
+		<p:confirmDialog header="Thông báo" global="true" showEffect="fade"
+			hideEffect="fade" styleClass="confirmDialog" closeOnEscape="true"
+			message="Bạn có chắc muốn xoá không?">
+			<p:commandButton value="OK" type="button"
+				styleClass="ui-confirmdialog-yes" icon="ui-icon-check" />
+			<p:commandButton value="Cancel" type="button"
+				styleClass="ui-confirmdialog-no " icon="ui-icon-close" />
+		</p:confirmDialog>
+	</h:form>
+	<div>
+		<div class="divheader" id="headerid">
+			<div class="bgheader">
+				<div class="wrapper">
+					<div class="logo">
+						<p:commandLink action="#{applicationBean.logoutHome()}">
+							<img src="#{request.contextPath}/resources/gfx/lixco_logo.png"
+								style="width: 100px; height: 50px" />
+							<span
+								style="color: rgba(128, 128, 128, 0.27); font-weight: bold; font-size: 12px;">
+								#{sessionScope.database} </span>
+						</p:commandLink>
+					</div>
+					<div class="main_menu">
+						<ul>
+							<li><a href="#"><i class="fa fa-user" />#{sessionScope.account.userName},
+									Hi</a>
+								<ul>
+									<li style="height: 50px; padding-top: 5px;"><p:commandLink
+											action="#{applicationBean.getAccountFormSession}"
+											update=":thongtintaikhoan"
+											oncomplete="PF('thongtintaikhoan').show();">
+											<i class="fa fa-user"
+												style="height: 50px; width: 40px; float: left; font-size: 35px; text-align: center" />
+											<div
+												style="float: right; width: 160px; margin-right: 10px; text-align: right">
+												<span>#{sessionScope.account.member.name}</span><br /> <span
+													style="font-size: 11px;">Last login:
+													#{applicationBean.hourLogin}</span>
+											</div>
+										</p:commandLink></li>
+									<div class="divclear" />
+									<li style="height: 30px; padding-top: 5px;"><p:commandLink
+											onclick="PF('doimatkhau').show();">
+											<i class="fa fa-key"
+												style="height: 30px; width: 40px; font-size: 20px; text-align: center" />
+											<span>Đổi mật khẩu</span>
+										</p:commandLink></li>
+									<li style="height: 30px; padding-top: 5px;"><p:commandLink
+											id="logoutid" action="#{applicationBean.logout()}">
+											<i class="fa fa-sign-out"
+												style="height: 30px; width: 40px; font-size: 20px; text-align: center" />
+											<span style="font-size: 16px">Đăng xuất</span>
+										</p:commandLink></li>
+								</ul></li>
+							<li class="space" />
+							<li><h:form id="notice">
+									<p:poll interval="300" update=":notice"
+										listener="#{applicationBean.checkNotice}"
+										onstart="document.getElementById('ajaxStatusPanel').style.display='none';" />
+									<p:commandLink update=":danhsachthongbao,:notice"
+										oncomplete="PF('thongbaohethong').show();"
+										action="#{applicationBean.showNoticeSystem}">
+										<i
+											class="fa fa-bell #{sessionScope.account.notice==true?'myanimation':''} "></i>Thông báo</p:commandLink>
+								</h:form></li>
+							<li class="space" />
+							<li><p:commandLink
+									action="#{applicationBean.setSettingPerson}"
+									oncomplete="PF('caidathethong').show();" update=":caidat">
+									<i class="fa fa-cogs"></i>Cài đặt</p:commandLink></li>
+						</ul>
+						<div class="clear"></div>
+					</div>
+					<div style="clear: both;">
+						<h1>Quản lý đăng ký cơm</h1>
+						<h:form id="showheaderform"
+							style="margin: auto; margin-top: -20px;width: 50px;">
+							<p:commandButton styleClass="hidenbutton" value=""
+								action="#{applicationBean.addclass()}" process="@this">
+							</p:commandButton>
+							<p:commandButton styleClass="showbutton" value=""
+								action="#{applicationBean.removeclass()}" process="@this">
+							</p:commandButton>
+						</h:form>
+					</div>
+
+				</div>
+			</div>
+		</div>
+		<div class="menuheader">
+			<div style="width: 1230px; margin: auto;">
+				<h:form id="formmenutitlebar">
+					<p:sticky target="tb" />
+					<p:menubar id="tb" model="#{menuBean.model}" styleClass="menubar" />
+				</h:form>
+				<h:form id="messagesbar">
+					<p:sticky target="thongbao" />
+					<p:messages id="thongbao" showDetail="true" closable="true">
+						<!-- 						<p:autoUpdate /> -->
+					</p:messages>
+				</h:form>
+				<h:form id="messages">
+					<p:growl life="5000" showDetail="true">
+					</p:growl>
+				</h:form>
+			</div>
+			<h:form id="trade-order-form"
+				style="width: 600px; margin: auto;height:4px">
+				<p:panel widgetVar="progressPanel" visible="false"
+					styleClass="progressPanel" style="border:none; " closable="true"
+					toggleable="true">
+					<p:progressBar style="height:4px;" mode="indeterminate" />
+				</p:panel>
+			</h:form>
+			<div
+				style="width: 1190px; height: auto; margin: auto; margin-top: 10px; background: white; padding: 20px; border-radius: 5px;">
+				<ui:insert name="content">
+					
+				</ui:insert>
+				<ui:include src="/dialog/Thongbaohethong.xhtml" />
+				<ui:include src="/dialog/Caidathethong.xhtml" />
+				<ui:include src="/dialog/Thongtintaikhoan.xhtml" />
+				<ui:include src="/dialog/Doimatkhau.xhtml" />
+			</div>
+		</div>
+	</div>
+</h:body>
+</html>

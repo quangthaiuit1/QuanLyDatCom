@@ -1,0 +1,34 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:pe="http://primefaces.org/ui/extensions"
+	xmlns:ui="http://java.sun.com/jsf/facelets">
+<ui:composition>
+	<p:dialog widgetVar="thongtintaikhoan" modal="true" resizable="false"
+		width="400" closeOnEscape="true" header="Thông tin tài khoản">
+		<h:form id="thongtintaikhoan">
+			<p:fieldset id="FStq" styleClass="group ">
+				<h:panelGrid columns="1" cellpadding="5"
+					style="width:330px; float:right"
+					columnClasses="thirty-percent, seven-percent">
+					<p:outputLabel value="Mã nhân viên" />
+					<p:inputText styleClass="inputwidthonehundresspercent"
+						readonly="true" value="#{applicationBean.account.member.code}" />
+					<p:outputLabel value="Họ tên" />
+					<p:inputText value="#{applicationBean.account.member.name}"
+						readonly="true" styleClass="inputwidthonehundresspercent" />
+					<p:outputLabel value="Phòng ban" />
+					<p:inputText
+						value="#{applicationBean.account.member.department.name}"
+						readonly="true" styleClass="inputwidthonehundresspercent" />
+					<p:outputLabel value="Tên đăng nhập" />
+					<p:inputText value="#{applicationBean.account.userName}"
+						styleClass="inputwidthonehundresspercent notUpCa" readonly="true" />
+				</h:panelGrid>
+			</p:fieldset>
+		</h:form>
+	</p:dialog>
+</ui:composition>
+</html>

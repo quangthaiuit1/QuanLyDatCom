@@ -1,0 +1,35 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:pe="http://primefaces.org/ui/extensions"
+	xmlns:ui="http://java.sun.com/jsf/facelets">
+<ui:composition>
+	<p:dialog widgetVar="thongbaohethong" modal="true" resizable="false"
+		width="700" closeOnEscape="true" header="Thông báo hệ thống">
+		<h:form id="danhsachthongbao">
+			<p:dataTable value="#{applicationBean.noticeSystems}" rowKey="#{item.title}" lazy="true" scrollable="true" selectionMode="single"
+				scrollHeight="400" widgetVar="datathongbao" resizableColumns="true"
+				var="item">
+				<p:column headerText="Ngày" style="width:70px">
+					<h:outputText value="#{item.date}">
+						<f:convertDateTime pattern="dd/MM/yyyy" />
+					</h:outputText>
+				</p:column>
+				<p:column headerText="Tiêu đề"
+					style="width:200px; text-align:center">
+					<h:outputText value="#{item.title}" />
+				</p:column>
+				<p:column headerText="Nội dung">
+					<p:inputTextarea placeholder="..." style="width:98%" rows="2"
+						readonly="true" value="#{item.content}" />
+				</p:column>
+				<f:facet name="footer">
+					<div style="clear: both;" />
+				</f:facet>
+			</p:dataTable>
+		</h:form>
+	</p:dialog>
+</ui:composition>
+</html>

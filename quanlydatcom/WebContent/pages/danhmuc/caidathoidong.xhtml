@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:c="http://java.sun.com/jsp/jstl/core"
+	xmlns:pe="http://primefaces.org/ui/extensions"
+	xmlns:h="http://java.sun.com/jsf/html" template="/pages/home.xhtml">
+	<ui:define name="content">
+		<h3 style="margin: 0px">Cài đặt hội đồng đánh giá</h3>
+		<p:separator />
+		<h:form id="menuformid">
+			<p:panelGrid columns="1" style="width:50%;margin:auto;">
+				<p:outputLabel value="Nhân viên (hội đồng)" />
+				<p:autoComplete style="width:100%;"
+					value="#{caiDatHoiDongBean.employeeDTO}"
+					converter="abstractConverter" minQueryLength="3"
+					completeMethod="#{caiDatHoiDongBean.completeEmployee}" var="p"
+					itemLabel="#{p.name}" itemValue="#{p}" forceSelection="true">
+					<p:ajax event="itemSelect"
+						listener="#{caiDatHoiDongBean.selectEmp()}" update=":menuformid" />
+					<f:attribute name="filters" value="name,code" />
+					<p:column style="width:50px">
+							   	#{p.code}
+							</p:column>
+					<p:column style="width:200px">
+							   	#{p.name}
+							</p:column>
+					<p:column style="width:200px">
+							   	#{p.nameDepart}
+							</p:column>
+				</p:autoComplete>
+				<p:outputLabel value="Danh sách phòng ban" />
+				<h:panelGrid columns="2" styleClass="noneformat trbgnone"
+					columnClasses="w30,w70"
+					style="width: 100%; margin: auto; background: none ; padding: auto;border: 0px;padding: 0px;">
+					<p:commandButton value="Chọn phòng ban"
+						oncomplete="PF('wgphongban').show()" styleClass="btnew" />
+					<p:autoComplete style="width:100%;" multiple="true"
+						value="#{caiDatHoiDongBean.phongBanHoiDongDanhGias}"
+						styleClass="autogs" scrollHeight="150"
+						converter="abstractConverter" var="p" itemLabel="#{p.tenphongban}"
+						itemValue="#{p}" forceSelection="true">
+						<p:column style="width:50px">
+							            #{p.tenphongban}
+							           </p:column>
+					</p:autoComplete>
+				</h:panelGrid>
+			</p:panelGrid>
+
+			<h:panelGrid style="width:50%;margin:auto;text-align:center">
+				<p:separator />
+				<p:commandButton value="Lưu/Cập nhật" styleClass="btsave"
+					action="#{caiDatHoiDongBean.createOrUpdate()}"
+					update=":messages,:menuformid" />
+			</h:panelGrid>
+		</h:form>
+		<p:dialog widgetVar="wgphongban" resizable="false" width="500"
+			closeOnEscape="true" header="Phòng ban">
+			<h:form id="fphongban">
+				<p:dataTable value="#{caiDatHoiDongBean.departmentList}" var="item"
+					scrollable="true" scrollHeight="500" styleClass="tableformat"
+					paginatorPosition="bottom" rowsPerPageTemplate="60,80,100"
+					paginator="true" rows="80" rowKey="#{item.code}"
+					sortBy="#{item.department.id}" expandableRowGroups="true"
+					rowIndexVar="rowIndex" resizableColumns="true">
+					<p:headerRow>
+						<p:column style="background:#2196f338;text-align:center">
+							<h:outputText value="" />
+						</p:column>
+						<p:column
+							style="background:#2196f338;font-size: 1.3em;text-align:center"
+							width="50">
+							<h:outputText value="#{item.department.code}" />
+						</p:column>
+						<p:column
+							style="background:#2196f338;font-size: 1.3em;padding: 5px;">
+							<h:outputText value="#{item.department.name}" />
+						</p:column>
+					</p:headerRow>
+					<p:column headerText="..." style="text-align:center" width="30">
+						<p:selectBooleanCheckbox value="#{item.select}">
+							<p:ajax process="@this" />
+						</p:selectBooleanCheckbox>
+					</p:column>
+					<p:column headerText="Mã" style="text-align:center" width="50">
+						<h:outputText value="#{item.code}" />
+					</p:column>
+					<p:column headerText="Tên phòng ban" style="text-align:left">
+						<h:outputText value="#{item.name}" />
+					</p:column>
+					<f:facet name="footer">
+						<p:commandButton process="@form" value="Thêm vào danh sách"
+							update=":messages,:menuformid"
+							oncomplete="PF('wgphongban').hide()"
+							action="#{caiDatHoiDongBean.selectDep()}" />
+						<div style="clear: both;" />
+					</f:facet>
+				</p:dataTable>
+			</h:form>
+		</p:dialog>
+	</ui:define>
+</ui:composition>

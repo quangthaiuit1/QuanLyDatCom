@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?><project-modules id="moduleCoreId" project-version="1.5.0">
+    <wb-module deploy-name="quanlydatcom-ear">
+        <wb-resource deploy-path="/" source-path="/EarContent" tag="defaultRootSource"/>
+        <dependent-module archiveName="quanlydatcom-ejb.jar" deploy-path="/" handle="module:/resource/quanlydatcom-ejb/quanlydatcom-ejb">
+            <dependent-object/>
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <dependent-module archiveName="quanlydatcom-jpa.jar" deploy-path="/lib" handle="module:/resource/quanlydatcom-jpa/quanlydatcom-jpa">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <dependent-module archiveName="quanlydatcom.war" deploy-path="/" handle="module:/resource/quanlydatcom/quanlydatcom">
+            <dependent-object/>
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+    </wb-module>
+</project-modules>
