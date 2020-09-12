@@ -15,6 +15,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Order;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
@@ -23,12 +24,12 @@ import trong.lixco.com.jpa.entity.OrderFood;
 @Stateless
 @TransactionManagement(TransactionManagementType.CONTAINER)
 public class OrderFoodService extends AbstractService<OrderFood> {
-	
+
 	@Inject
 	private EntityManager em;
 	@Resource
 	private SessionContext ct;
-	
+
 	@Override
 	protected Class<OrderFood> getEntityClass() {
 		// TODO Auto-generated method stub
@@ -46,7 +47,7 @@ public class OrderFoodService extends AbstractService<OrderFood> {
 		// TODO Auto-generated method stub
 		return ct;
 	}
-	
+
 	public List<OrderFood> findByIdGreater(int dayOfMonth, int month, int year) {
 		// primary
 		CriteriaBuilder cb = em.getCriteriaBuilder();
@@ -74,27 +75,31 @@ public class OrderFoodService extends AbstractService<OrderFood> {
 		cq.where(finalPredicate);
 		TypedQuery<OrderFood> query = em.createQuery(cq);
 		List<OrderFood> results = query.getResultList();
-		if(!results.isEmpty()) {
+		if (!results.isEmpty()) {
 			return results;
-		}else {
+		} else {
 			return new ArrayList<OrderFood>();
 		}
 	}
-	
-	//find tu ngay den ngay
-	public List<OrderFood> findByDayToDay(Date firstDay, Date lastDay) {
+
+	// find tu ngay den ngay
+	public List<OrderFood> findByDayToDay(Date firstDay, Date lastDay, String employeeCode) {
 		// primary
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<OrderFood> cq = cb.createQuery(OrderFood.class);
 		Root<OrderFood> root = cq.from(OrderFood.class);
 		List<Predicate> queries = new ArrayList<>();
 		if (firstDay != null) {
-			Predicate resultQuery = cb.greaterThanOrEqualTo(root.get("registration_date"), firstDay);
-			queries.add(resultQuery);
+			Predicate resultQueryFirst = cb.greaterThanOrEqualTo(root.get("registration_date"), firstDay);
+			queries.add(resultQueryFirst);
 		}
 		if (lastDay != null) {
-			Predicate resultQuery = cb.lessThanOrEqualTo(root.get("registration_date"), lastDay);
-			queries.add(resultQuery);
+			Predicate resultQueryLast = cb.lessThanOrEqualTo(root.get("registration_date"), lastDay);
+			queries.add(resultQueryLast);
+		}
+		if (employeeCode != null) {
+			Predicate resultQueryEmployeeCode = cb.equal(root.get("employeeCode"), employeeCode);
+			queries.add(resultQueryEmployeeCode);
 		}
 
 		Predicate data[] = new Predicate[queries.size()];
@@ -102,16 +107,48 @@ public class OrderFoodService extends AbstractService<OrderFood> {
 			data[i] = queries.get(i);
 		}
 		Predicate finalPredicate = cb.and(data);
-		cq.where(finalPredicate);
+//		List<Order> orderList = new ArrayList<>();
+//		orderList.add(cb.desc(root.get("registration_date")));
+		cq.select(root).where(finalPredicate);
 		TypedQuery<OrderFood> query = em.createQuery(cq);
 		List<OrderFood> results = query.getResultList();
-		if(!results.isEmpty()) {
+		if (!results.isEmpty()) {
 			return results;
-		}else {
+		} else {
 			return new ArrayList<OrderFood>();
 		}
 	}
 	
+	// find tu ngay den ngay sort by day
+		public List<OrderFood> findByDayToDaySortByDate(Date firstDay, Date lastDay) {
+			// primary
+			CriteriaBuilder cb = em.getCriteriaBuilder();
+			CriteriaQuery<OrderFood> cq = cb.createQuery(OrderFood.class);
+			Root<OrderFood> root = cq.from(OrderFood.class);
+			List<Predicate> queries = new ArrayList<>();
+			if (firstDay != null) {
+				Predicate resultQueryFirst = cb.greaterThanOrEqualTo(root.get("registration_date"), firstDay);
+				queries.add(resultQueryFirst);
+			}
+			if (lastDay != null) {
+				Predicate resultQueryLast = cb.lessThanOrEqualTo(root.get("registration_date"), lastDay);
+				queries.add(resultQueryLast);
+			}
+			Predicate data[] = new Predicate[queries.size()];
+			for (int i = 0; i < queries.size(); i++) {
+				data[i] = queries.get(i);
+			}
+			Predicate finalPredicate = cb.and(data);
+			cq.select(root).where(finalPredicate).orderBy(cb.asc(root.get("registration_date")));
+			TypedQuery<OrderFood> query = em.createQuery(cq);
+			List<OrderFood> results = query.getResultList();
+			if (!results.isEmpty()) {
+				return results;
+			} else {
+				return new ArrayList<OrderFood>();
+			}
+		}
+
 	public OrderFood findByDateAndEmployeeCode(Date date, String employeeCode) {
 		// primary
 		CriteriaBuilder cb = em.getCriteriaBuilder();
@@ -135,13 +172,13 @@ public class OrderFoodService extends AbstractService<OrderFood> {
 		cq.where(finalPredicate);
 		TypedQuery<OrderFood> query = em.createQuery(cq);
 		List<OrderFood> results = query.getResultList();
-		if(!results.isEmpty()) {
+		if (!results.isEmpty()) {
 			return results.get(0);
-		}else {
+		} else {
 			return new OrderFood();
 		}
 	}
-	
+
 	public List<OrderFood> findRange(String codeEmp, int month, int year, List<String> codeEmps) {
 		if (codeEmps != null && codeEmps.size() != 0) {
 			CriteriaBuilder cb = em.getCriteriaBuilder();

@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Created with Jaspersoft Studio version 6.11.0.final using JasperReports Library version 6.11.0-0c4056ccaa4d25a5a8c45672d2f764ea3498bebb  -->
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="dubaosuatan" pageWidth="842" pageHeight="595" orientation="Landscape" columnWidth="802" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="bbf823c1-4c6c-47e8-8073-598fa034c7d7">
+	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="One Empty Record"/>
+	<property name="com.jaspersoft.studio.unit." value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.pageHeight" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.pageWidth" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.topMargin" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.bottomMargin" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.leftMargin" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.rightMargin" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.columnWidth" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.columnSpacing" value="pixel"/>
+	<subDataset name="Dataset1" uuid="08e5288b-d218-4240-beff-6360f5ce8c01">
+		<queryString>
+			<![CDATA[]]>
+		</queryString>
+	</subDataset>
+	<parameter name="listOrderFood" class="net.sf.jasperreports.engine.data.JRBeanCollectionDataSource"/>
+	<parameter name="logo" class="java.lang.String"/>
+	<queryString>
+		<![CDATA[]]>
+	</queryString>
+	<field name="registrationDate" class="java.util.Date"/>
+	<field name="shift" class="java.lang.Long"/>
+	<field name="foodName" class="java.lang.String"/>
+	<group name="Group1">
+		<groupExpression><![CDATA[$F{registrationDate}]]></groupExpression>
+		<groupHeader>
+			<band height="60">
+				<textField>
+					<reportElement x="-11" y="30" width="800" height="30" uuid="5f9486b0-f497-445c-b137-29aa4b2e4022"/>
+					<textFieldExpression><![CDATA[$F{registrationDate}]]></textFieldExpression>
+				</textField>
+			</band>
+		</groupHeader>
+	</group>
+	<group name="Group2">
+		<groupExpression><![CDATA[$F{shift}]]></groupExpression>
+		<groupHeader>
+			<band height="32">
+				<staticText>
+					<reportElement x="46" y="2" width="30" height="30" uuid="70437169-8b1a-4dc4-bb46-fc684332d403"/>
+					<text><![CDATA[Ca]]></text>
+				</staticText>
+				<textField>
+					<reportElement x="66" y="2" width="670" height="30" uuid="e983d764-5855-4c7e-ba6f-de87e3df5d76"/>
+					<textFieldExpression><![CDATA[$F{shift}]]></textFieldExpression>
+				</textField>
+			</band>
+		</groupHeader>
+	</group>
+	<group name="Group3">
+		<groupExpression><![CDATA[$F{foodName}]]></groupExpression>
+		<groupHeader>
+			<band height="50">
+				<textField>
+					<reportElement x="210" y="0" width="359" height="30" uuid="9cd035e7-c2f8-4271-9cf1-7a78cee01c72"/>
+					<textElement>
+						<font fontName="FontReport" size="12"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{foodName}]]></textFieldExpression>
+				</textField>
+				<textField evaluationTime="Group" evaluationGroup="Group3">
+					<reportElement x="670" y="0" width="100" height="30" uuid="6da7b6c3-fe59-403b-964c-c62263b6b7c6"/>
+					<textFieldExpression><![CDATA[$V{Group3_COUNT}]]></textFieldExpression>
+				</textField>
+			</band>
+		</groupHeader>
+	</group>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<title>
+		<band height="75" splitType="Stretch">
+			<rectangle>
+				<reportElement x="-10" y="2" width="199" height="73" forecolor="#0E5EC7" uuid="91de2f92-eaaf-4979-93b9-d4d98a72e181"/>
+				<graphicElement>
+					<pen lineWidth="3.0" lineStyle="Double"/>
+				</graphicElement>
+			</rectangle>
+			<rectangle>
+				<reportElement x="187" y="2" width="622" height="73" forecolor="#0E5EC7" uuid="07d1341b-08c4-4b4b-b5e1-b60010108058"/>
+				<graphicElement>
+					<pen lineWidth="3.0" lineStyle="Double"/>
+				</graphicElement>
+			</rectangle>
+			<staticText>
+				<reportElement x="-9" y="5" width="196" height="26" forecolor="#0E5EC7" uuid="a3468dd6-a4fc-4715-8ebd-4ae74d3b26df"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="FontReport" size="12"/>
+				</textElement>
+				<text><![CDATA[CÔNG TY CỔ PHẦN BỘT GIẶT LIX]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="211" y="22" width="570" height="26" forecolor="#0E5EC7" uuid="42c90a05-df83-434f-a03f-7403150cf033"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="FontReport" size="12" isBold="true"/>
+				</textElement>
+				<text><![CDATA[DỰ BÁO SUẤT ĂN]]></text>
+			</staticText>
+			<image hAlign="Center" vAlign="Middle">
+				<reportElement x="46" y="31" width="95" height="41" uuid="7eb2e105-7463-43fb-9241-5863ca11983a"/>
+				<imageExpression><![CDATA[$P{logo}]]></imageExpression>
+			</image>
+		</band>
+	</title>
+	<pageHeader>
+		<band height="36" splitType="Stretch">
+			<staticText>
+				<reportElement x="211" y="6" width="460" height="30" uuid="b0d743cd-fdfe-40b5-ab8c-cb97456aaee2"/>
+				<textElement>
+					<font fontName="FontReport" size="12"/>
+				</textElement>
+				<text><![CDATA[Tên món ăn]]></text>
+			</staticText>
+		</band>
+	</pageHeader>
+	<summary>
+		<band height="45" splitType="Stretch"/>
+	</summary>
+</jasperReport>

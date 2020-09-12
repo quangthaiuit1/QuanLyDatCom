@@ -1,5 +1,6 @@
 package trong.lixco.com.bean;
 
+import java.rmi.RemoteException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -9,7 +10,6 @@ import java.util.List;
 import javax.ejb.EJB;
 import javax.faces.bean.ViewScoped;
 import javax.inject.Inject;
-import javax.inject.Named;
 
 import org.jboss.logging.Logger;
 import org.joda.time.LocalDate;
@@ -21,9 +21,11 @@ import trong.lixco.com.account.servicepublics.DepartmentServicePublicProxy;
 import trong.lixco.com.account.servicepublics.Member;
 import trong.lixco.com.account.servicepublics.MemberServicePublic;
 import trong.lixco.com.account.servicepublics.MemberServicePublicProxy;
-import trong.lixco.com.ejb.service.FoodService;
+import trong.lixco.com.bean.staticentity.Notification;
+import trong.lixco.com.bean.staticentity.ShiftsUtil;
+import trong.lixco.com.ejb.service.FoodDayByDayService;
 import trong.lixco.com.ejb.service.OrderFoodService;
-import trong.lixco.com.jpa.entity.Food;
+import trong.lixco.com.jpa.entity.FoodByDay;
 import trong.lixco.com.jpa.entity.OrderFood;
 import trong.lixco.com.servicepublic.EmployeeDTO;
 import trong.lixco.com.servicepublic.EmployeeServicePublic;
@@ -50,7 +52,6 @@ public class DangKyComBean extends AbstractBean<OrderFood> {
 	private int monthCopy = 0;
 	private int yearCopy = 0;
 
-
 	@Inject
 	private Logger logger;
 
@@ -74,19 +75,20 @@ public class DangKyComBean extends AbstractBean<OrderFood> {
 
 	// list du lieu de load len bang dang ky
 	private List<OrderFood> orderFoods;
-	private List<Food> foodsShifts1;
-	private List<Food> foodsShifts2;
-	private List<Food> foodsShifts3;
+	private List<FoodByDay> foodsShifts1;
+	private List<FoodByDay> foodsShifts2;
+	private List<FoodByDay> foodsShifts3;
+	
 
-	private Food food1Selected;
-	private Food food2Selected;
-	private Food food3Selected;
+	private FoodByDay food1Selected;
+	private FoodByDay food2Selected;
+	private FoodByDay food3Selected;
 
 	@EJB
 	private OrderFoodService ORDER_FOOD_SERVICE;
 
 	@EJB
-	private FoodService FOOD_SERVICE;
+	private FoodDayByDayService FOOD_BY_DAY_SERVICE;
 
 	EmployeeServicePublic EMPLOYEE_SERVICE_PUBLIC;
 
@@ -103,9 +105,9 @@ public class DangKyComBean extends AbstractBean<OrderFood> {
 
 	@Override
 	public void initItem() {
-		food1Selected = new Food();
-		food2Selected = new Food();
-		food3Selected = new Food();
+//		food1Selected = new FoodDayByDay();
+//		food2Selected = new FoodDayByDay();
+//		food3Selected = new FoodDayByDay();
 		sf = new SimpleDateFormat("dd/MM/yyyy");
 		departmentSearch = new Department();
 
@@ -145,12 +147,6 @@ public class DangKyComBean extends AbstractBean<OrderFood> {
 		LocalDate lc = new LocalDate();
 	}
 
-	// ham tinh thu trong tuan
-	public int getThuTrongTuan(int totalDateToCurrent, int year) {
-		int s = (year + ((year - 1) / 4) - ((year - 1) / 100) + ((year - 1) / 400) + totalDateToCurrent) % 7;
-		return s;
-	}
-
 	public void ajaxSelectDep() {
 		// if (departmentParent != null)
 		// employees = employeeService.findByDepp(departmentParent);
@@ -178,24 +174,46 @@ public class DangKyComBean extends AbstractBean<OrderFood> {
 
 	public void findData() {
 		// list order food tu DB
-		System.out.println(sf.format(endDate));
-
 		java.sql.Date start = new java.sql.Date(startDate.getTime());
 		java.sql.Date end = new java.sql.Date(endDate.getTime());
 
-		orderFoods = ORDER_FOOD_SERVICE.findByDayToDay(start, end);
+		orderFoods = ORDER_FOOD_SERVICE.findByDayToDay(start, end, member.getCode());
 		resetData(this.orderFoods);
 	}
 
 	// Load lai data
 	public void resetData(List<OrderFood> orderFoods) {
+		// tinh so ngay cua thang
+		boolean namNhuan = false;
+		// get nam hien tai
+		int year = Calendar.getInstance().get(Calendar.YEAR);
+		// kiem tra nhuan
+		if (year % 400 == 0 || (year % 4 == 0 && year % 100 != 0)) {
+			namNhuan = true;
+		}
+
+		// set so ngay cua moi thang vao mang
+		int[] month = new int[11];
+		if (namNhuan) {
+			month = new int[] { 31, 29, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 };
+		}
+		if (namNhuan == false) {
+			month = new int[] { 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 };
+		}
+
 		Calendar c = Calendar.getInstance();
 		c.setTime(this.startDate);
 		int firstDay = c.get(Calendar.DAY_OF_MONTH);
 		c.setTime(endDate);
 		int lastDay = c.get(Calendar.DAY_OF_MONTH);
-		// Tong so ngay tim kiem
-		int totalDay = lastDay - firstDay + 1;
+		// tong so ngay tim kiem
+		int totalDay = 0;
+		if (firstDay > lastDay) {
+			totalDay = lastDay + month[endDate.getMonth() - 1] - firstDay + 1;
+		}
+		if (firstDay < lastDay) {
+			totalDay = lastDay - firstDay + 1;
+		}
 		// check xem user tim tong so bao nhieu ngay
 		List<OrderFood> orderFoodsTemp = new ArrayList<>();
 		// them vao de tao moi
@@ -212,13 +230,13 @@ public class DangKyComBean extends AbstractBean<OrderFood> {
 		// orderfoods tam thoi
 		List<OrderFood> ofTemps = new ArrayList<>();
 		ofTemps.addAll(orderFoods);
-		//kiem tra mon an da co trong db chua
+		// kiem tra mon an da co trong db chua
 		for (int i = 0; i < orderFoodsTemp.size(); i++) {
 			boolean check = false;
 			for (int j = 0; j < ofTemps.size(); j++) {
 				if (ofTemps.get(j).getRegistration_date() != null) {
-					if (ofTemps.get(j).getRegistration_date().getDate() == orderFoodsTemp.get(i)
-							.getRegistration_date().getDate()) {
+					if (ofTemps.get(j).getRegistration_date().getDate() == orderFoodsTemp.get(i).getRegistration_date()
+							.getDate()) {
 						check = true;
 						break;
 					}
@@ -228,121 +246,202 @@ public class DangKyComBean extends AbstractBean<OrderFood> {
 				orderFoods.add(orderFoodsTemp.get(i));
 			}
 		}
-		//sap xep
+		// sap xep
 		orderFoods.sort((o1, o2) -> o1.getRegistration_date().compareTo(o2.getRegistration_date()));
 	}
 
 	// show food ca 1
 	public void showListFoodShift1(OrderFood orderFood) {
 		java.sql.Date abc = new java.sql.Date(orderFood.getRegistration_date().getTime());
-		foodsShifts1 = FOOD_SERVICE.findByDate(abc, 1);
+		foodsShifts1 = FOOD_BY_DAY_SERVICE.findByDate(abc, ShiftsUtil.SHIFTS1_ID);
 
 	}
 
 	public void showListFoodShift2(OrderFood orderFood) {
 		java.sql.Date abc = new java.sql.Date(orderFood.getRegistration_date().getTime());
-		foodsShifts2 = FOOD_SERVICE.findByDate(abc, 2);
+		foodsShifts2 = FOOD_BY_DAY_SERVICE.findByDate(abc, ShiftsUtil.SHIFTS2_ID);
 	}
 
 	public void showListFoodShift3(OrderFood orderFood) {
 		java.sql.Date abc = new java.sql.Date(orderFood.getRegistration_date().getTime());
-		foodsShifts3 = FOOD_SERVICE.findByDate(abc, 3);
+		foodsShifts3 = FOOD_BY_DAY_SERVICE.findByDate(abc, ShiftsUtil.SHIFTS3_ID);
+	}
+
+	// ktra co phai ngay hien tai hay khong
+	public boolean isDateCurrent(FoodByDay dateCheck) {
+		Date dateCurrent = new Date();
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
+		return sdf.format(dateCurrent).equals(sdf.format(dateCheck.getFood_date()));
+	}
+
+	// ktra het han chua
+	public boolean isExpired(FoodByDay dateCheck) {
+		Date dateCurrent = new Date();
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
+		return dateCheck.getFood_date().before(dateCurrent);
 	}
 
 	// Cap nhat food theo ca cho user
 	public void createOrUpdateFoodShifts1() {
-		OrderFood temp = ORDER_FOOD_SERVICE.findByDateAndEmployeeCode(food1Selected.getFood_date(), member.getCode());
-		if (temp.getEmployeeName() == null) {
-			OrderFood ofSave = new OrderFood();
-			ofSave.setFood_shifts1(food1Selected);
-			ofSave.setRegistration_date(food1Selected.getFood_date());
-			ofSave.setEmployeeName(member.getName());
-			ofSave.setEmployeeCode(member.getCode());
-			OrderFood resultCreate = ORDER_FOOD_SERVICE.create(ofSave);
-			if (resultCreate != null) {
-				System.out.println("th�nh c�ng");
-				orderFoods = ORDER_FOOD_SERVICE.findByDayToDay(startDate,
-						endDate);
-				resetData(orderFoods);
-			} else {
-				System.out.println("That bai");
+		// ca duoc chon khong co mon nao
+		if (food1Selected == null) {
+			Notification.NOTI_WARN("Vui lòng chọn món");
+			return;
+		}
+		if (food1Selected != null) {
+			// dieu kien khong duoc dang ky mon cua ngay hom nay
+			// ktra co phai ngay hien tai khong?
+			boolean isCurrent = isDateCurrent(food1Selected);
+			if (isCurrent) {
+				Notification.NOTI_WARN("Vui lòng đăng ký trước 1 ngày");
+				return;
 			}
-		} else {
-			temp.setFood_shifts1(food1Selected);
-			OrderFood resultUpdate = ORDER_FOOD_SERVICE.update(temp);
-			if (resultUpdate != null) {
-				System.out.println("th�nh c�ng");
-				orderFoods = ORDER_FOOD_SERVICE.findByDayToDay(startDate,
-						endDate);
-				resetData(orderFoods);
-			} else {
-				System.out.println("That bai");
+			if (!isCurrent) {
+				boolean isExpired = isExpired(food1Selected);
+				if (isExpired) {
+					Notification.NOTI_WARN("Hết hạn đăng ký món ăn");
+					return;
+				}
+				if (!isExpired) {
+					OrderFood temp = ORDER_FOOD_SERVICE.findByDateAndEmployeeCode(food1Selected.getFood_date(),
+							member.getCode());
+					EmployeeDTO employee = new EmployeeDTO();
+					try {
+						employee = EMPLOYEE_SERVICE_PUBLIC.findByCode(member.getCode());
+					} catch (RemoteException e) {
+						e.printStackTrace();
+					}
+					if (temp.getEmployeeName() == null && employee.getName() != null) {
+						OrderFood ofSave = new OrderFood();
+						ofSave.setFood_by_date_shifts1(food1Selected);
+						ofSave.setRegistration_date(food1Selected.getFood_date());
+						ofSave.setEmployeeName(member.getName());
+						ofSave.setEmployeeCode(member.getCode());
+						ofSave.setDepartment_code(member.getDepartment().getCode());
+						ofSave.setDepartment_name(member.getDepartment().getName());
+						ofSave.setEmployee_id(employee.getCodeOld());
+						OrderFood resultCreate = ORDER_FOOD_SERVICE.create(ofSave);
+						if (resultCreate != null) {
+							orderFoods = ORDER_FOOD_SERVICE.findByDayToDay(startDate, endDate, member.getCode());
+							resetData(orderFoods);
+						}
+					} else {
+						temp.setFood_by_date_shifts1(food1Selected);
+						OrderFood resultUpdate = ORDER_FOOD_SERVICE.update(temp);
+						if (resultUpdate != null) {
+							orderFoods = ORDER_FOOD_SERVICE.findByDayToDay(startDate, endDate, member.getCode());
+							resetData(orderFoods);
+						}
+					}
+				}
 			}
 		}
 	}
 
 	public void createOrUpdateFoodShifts2() {
-		OrderFood temp = ORDER_FOOD_SERVICE.findByDateAndEmployeeCode(food2Selected.getFood_date(), member.getCode());
-		if (temp == null) {
-			OrderFood ofSave = new OrderFood();
-			ofSave.setFood_shifts2(food2Selected);
-			ofSave.setRegistration_date(food2Selected.getFood_date());
-			ofSave.setEmployeeName(member.getName());
-			ofSave.setEmployeeCode(member.getCode());
-			OrderFood resultCreate = ORDER_FOOD_SERVICE.create(ofSave);
-			if (resultCreate != null) {
-				System.out.println("th�nh c�ng");
-				orderFoods = ORDER_FOOD_SERVICE.findByDayToDay(startDate,
-						endDate);
-				resetData(orderFoods);
-			} else {
-				System.out.println("That bai");
+		// ca chon khong co mon
+		if (food2Selected == null) {
+			Notification.NOTI_WARN("Vui lòng chọn món");
+			return;
+		}
+		if (food2Selected != null) {
+			// kiem tra co phai ngay hien tai khong
+			boolean isCurrent = isDateCurrent(food2Selected);
+			if (isCurrent) {
+				Notification.NOTI_WARN("Vui lòng đăng ký trước 1 ngày");
+				return;
 			}
-		} else {
-			temp.setFood_shifts2(food2Selected);
-			OrderFood resultUpdate = ORDER_FOOD_SERVICE.update(temp);
-			if (resultUpdate != null) {
-				System.out.println("th�nh c�ng");
-				orderFoods = ORDER_FOOD_SERVICE.findByDayToDay(startDate,
-						endDate);
-				resetData(orderFoods);
-			} else {
-				System.out.println("That bai");
+			if (!isCurrent) {
+				boolean isExpired = isExpired(food2Selected);
+				if (isExpired) {
+					Notification.NOTI_WARN("Hết hạn đăng ký món ăn");
+					return;
+				}
+				if (!isExpired) {
+					OrderFood temp = ORDER_FOOD_SERVICE.findByDateAndEmployeeCode(food2Selected.getFood_date(),
+							member.getCode());
+					if (temp == null) {
+						OrderFood ofSave = new OrderFood();
+						ofSave.setFood_by_date_shifts2(food2Selected);
+						ofSave.setRegistration_date(food2Selected.getFood_date());
+						ofSave.setEmployeeName(member.getName());
+						ofSave.setEmployeeCode(member.getCode());
+						OrderFood resultCreate = ORDER_FOOD_SERVICE.create(ofSave);
+						if (resultCreate != null) {
+							orderFoods = ORDER_FOOD_SERVICE.findByDayToDay(startDate, endDate, member.getCode());
+							resetData(orderFoods);
+						}
+					} else {
+						temp.setFood_by_date_shifts2(food2Selected);
+						OrderFood resultUpdate = ORDER_FOOD_SERVICE.update(temp);
+						if (resultUpdate != null) {
+							orderFoods = ORDER_FOOD_SERVICE.findByDayToDay(startDate, endDate, member.getCode());
+							resetData(orderFoods);
+						}
+					}
+				}
 			}
 		}
 	}
 
 	public void createOrUpdateFoodShifts3() {
-		OrderFood temp = ORDER_FOOD_SERVICE.findByDateAndEmployeeCode(food3Selected.getFood_date(), member.getCode());
-		if (temp == null) {
-			OrderFood ofSave = new OrderFood();
-			ofSave.setFood_shifts3(food3Selected);
-			ofSave.setRegistration_date(food3Selected.getFood_date());
-			ofSave.setEmployeeName(member.getName());
-			ofSave.setEmployeeCode(member.getCode());
-			OrderFood resultCreate = ORDER_FOOD_SERVICE.create(ofSave);
-			if (resultCreate != null) {
-				System.out.println("th�nh c�ng");
-				orderFoods = ORDER_FOOD_SERVICE.findByDayToDay(startDate,
-						endDate);
-				resetData(orderFoods);
-			} else {
-				System.out.println("That bai");
-			}
-		} else {
-			temp.setFood_shifts3(food3Selected);
-			OrderFood resultUpdate = ORDER_FOOD_SERVICE.update(temp);
-			if (resultUpdate != null) {
-				System.out.println("th�nh c�ng");
-				orderFoods = ORDER_FOOD_SERVICE.findByDayToDay(startDate,
-						endDate);
-				resetData(orderFoods);
-			} else {
-				System.out.println("That bai");
+		// ca chon khong co mon
+		if (food3Selected == null) {
+			Notification.NOTI_WARN("Vui lòng chọn món");
+			return;
+		}
+		if (food3Selected != null) {
+			try {
+				EmployeeDTO employee = EMPLOYEE_SERVICE_PUBLIC.findByCode(member.getCode());
+				//neu lam viec theo ca moi duoc chon ca 3
+				if (employee.isWorkShift()) {
+					// kiem tra co phai ngay hien tai khong
+					boolean isCurrent = isDateCurrent(food3Selected);
+					if (isCurrent) {
+						Notification.NOTI_WARN("Vui lòng đăng ký trước 1 ngày");
+						return;
+					}
+					if (!isCurrent) {
+						boolean isExpired = isExpired(food2Selected);
+						if (isExpired) {
+							Notification.NOTI_WARN("Hết hạn đăng ký món ăn");
+							return;
+						}
+						if (!isExpired) {
+							OrderFood temp = ORDER_FOOD_SERVICE.findByDateAndEmployeeCode(food3Selected.getFood_date(),
+									member.getCode());
+							if (temp == null) {
+								OrderFood ofSave = new OrderFood();
+								ofSave.setFood_by_date_shifts3(food3Selected);
+								ofSave.setRegistration_date(food3Selected.getFood_date());
+								ofSave.setEmployeeName(member.getName());
+								ofSave.setEmployeeCode(member.getCode());
+								OrderFood resultCreate = ORDER_FOOD_SERVICE.create(ofSave);
+								if (resultCreate != null) {
+									orderFoods = ORDER_FOOD_SERVICE.findByDayToDay(startDate, endDate,
+											member.getCode());
+									resetData(orderFoods);
+								}
+							} else {
+								temp.setFood_by_date_shifts3(food3Selected);
+								OrderFood resultUpdate = ORDER_FOOD_SERVICE.update(temp);
+								if (resultUpdate != null) {
+									orderFoods = ORDER_FOOD_SERVICE.findByDayToDay(startDate, endDate,
+											member.getCode());
+									resetData(orderFoods);
+								}
+							}
+						}
+					}
+				}else {
+					//nhan vien van phong
+					Notification.NOTI_ERROR("Không được đăng ký");
+				}
+			} catch (RemoteException e) {
+				e.printStackTrace();
 			}
 		}
 	}
-
 
 	@Override
 	protected Logger getLogger() {
@@ -525,51 +624,51 @@ public class DangKyComBean extends AbstractBean<OrderFood> {
 		this.firstDayInMonthByWeekCurrent = firstDayInMonthByWeekCurrent;
 	}
 
-	public List<Food> getFoodsShifts1() {
+	public List<FoodByDay> getFoodsShifts1() {
 		return foodsShifts1;
 	}
 
-	public void setFoodsShifts1(List<Food> foodsShifts1) {
+	public void setFoodsShifts1(List<FoodByDay> foodsShifts1) {
 		this.foodsShifts1 = foodsShifts1;
 	}
 
-	public List<Food> getFoodsShifts2() {
+	public List<FoodByDay> getFoodsShifts2() {
 		return foodsShifts2;
 	}
 
-	public void setFoodsShifts2(List<Food> foodsShifts2) {
+	public void setFoodsShifts2(List<FoodByDay> foodsShifts2) {
 		this.foodsShifts2 = foodsShifts2;
 	}
 
-	public List<Food> getFoodsShifts3() {
+	public List<FoodByDay> getFoodsShifts3() {
 		return foodsShifts3;
 	}
 
-	public void setFoodsShifts3(List<Food> foodsShifts3) {
+	public void setFoodsShifts3(List<FoodByDay> foodsShifts3) {
 		this.foodsShifts3 = foodsShifts3;
 	}
 
-	public Food getFood1Selected() {
+	public FoodByDay getFood1Selected() {
 		return food1Selected;
 	}
 
-	public void setFood1Selected(Food food1Selected) {
+	public void setFood1Selected(FoodByDay food1Selected) {
 		this.food1Selected = food1Selected;
 	}
 
-	public Food getFood2Selected() {
+	public FoodByDay getFood2Selected() {
 		return food2Selected;
 	}
 
-	public void setFood2Selected(Food food2Selected) {
+	public void setFood2Selected(FoodByDay food2Selected) {
 		this.food2Selected = food2Selected;
 	}
 
-	public Food getFood3Selected() {
+	public FoodByDay getFood3Selected() {
 		return food3Selected;
 	}
 
-	public void setFood3Selected(Food food3Selected) {
+	public void setFood3Selected(FoodByDay food3Selected) {
 		this.food3Selected = food3Selected;
 	}
 

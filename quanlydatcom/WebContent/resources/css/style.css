@@ -9,13 +9,17 @@ body {
 }
 
 .hidenbutton {
-	background: url("#{resource['primefaces-extensions:layout/toggle-up.gif']}") no-repeat scroll top center transparent;
+	background:
+		url("#{resource['primefaces-extensions:layout/toggle-up.gif']}")
+		no-repeat scroll top center transparent;
 	margin: auto;
 }
 
 .showbutton {
 	display: none;
-	background: url("#{resource['primefaces-extensions:layout/toggle-up.gif']}") no-repeat scroll top center transparent;
+	background:
+		url("#{resource['primefaces-extensions:layout/toggle-up.gif']}")
+		no-repeat scroll top center transparent;
 	margin: auto;
 }
 
@@ -513,9 +517,11 @@ input.ui-state-error {
 .ui-inplace {
 	color: blueviolet;
 }
+
 .w5 {
 	width: 5%;
 }
+
 .w10 {
 	width: 10%;
 }
@@ -531,6 +537,7 @@ input.ui-state-error {
 .w30 {
 	width: 30%;
 }
+
 .w35 {
 	width: 35%;
 }
@@ -558,6 +565,7 @@ input.ui-state-error {
 .w90 {
 	width: 90%;
 }
+
 .w95 {
 	width: 95%;
 }
@@ -759,116 +767,147 @@ input.ui-state-error {
 	font-weight: bold;
 	font-size: 1.1em;
 }
-.ui-datatable-resizable thead th, .ui-datatable-resizable tbody td, .ui-datatable-resizable tfoot td {
-    white-space: pre-line !important;
+
+.ui-datatable-resizable thead th, .ui-datatable-resizable tbody td,
+	.ui-datatable-resizable tfoot td {
+	white-space: pre-line !important;
 }
+
 .ui-spinner-input {
-    text-align: center !important;
+	text-align: center !important;
 }
+
 .ui-inputfield {
-    width: 95%;
+	width: 95%;
 }
-.inputnumberhearder input{
-    font-size: 1.3em !important;
-    font-weight: bold !important;
+
+.inputnumberhearder input {
+	font-size: 1.3em !important;
+	font-weight: bold !important;
 }
+
 .ui-menubar .ui-menu-child .ui-menuitem {
-    width: 97% !important;
+	width: 97% !important;
 }
-.pdnf2px td{
-	padding:2px !important;
+
+.pdnf2px td {
+	padding: 2px !important;
 }
-.tableformat table{
+
+.tableformat table {
+	
 }
-.tableformat table thead tr{
-    background: gray;
+
+.tableformat table thead tr {
+	background: gray;
 }
-.tableformat table thead th{
+
+.tableformat table thead th {
 	height: 25px;
-    background-color: gray !important;
-    background-image: none !important;
-    border: 1px solid white !important;
-    border-radius:0px !important;
+	background-color: gray !important;
+	background-image: none !important;
+	border: 1px solid white !important;
+	border-radius: 0px !important;
 }
-.tableformat table thead th span{
-	  font-size: 1.1em !important;
-    font-weight: bold;
-    text-shadow: none !important;
-    color:white !important;
+
+.tableformat table thead th span {
+	font-size: 1.1em !important;
+	font-weight: bold;
+	text-shadow: none !important;
+	color: white !important;
 }
+
 .paneltitle span {
-	    font-size: 1.2em;
+	font-size: 1.2em;
 }
+
 .btsave {
 	background: #1c991c !important;
-    color: white !important;
-    text-shadow: none !important;
-    padding: 3px !important;
-    border-radius: 0px;
+	color: white !important;
+	text-shadow: none !important;
+	padding: 3px !important;
+	border-radius: 0px;
+}
+
+.btadd {
+	background: #19b0ee !important;
+	color: white !important;
+	text-shadow: none !important;
+	padding: 3px !important;
+	border-radius: 0px;
 }
 
 .btnew {
 	background: #149bdf !important;
-	color: white !important ;
+	color: white !important;
 	text-shadow: none !important;
-	 padding: 3px !important;
-    border-radius: 0px;
+	padding: 3px !important;
+	border-radius: 0px;
 }
 
 .btprint {
 	background: gray !important;
 	color: white !important;
 	text-shadow: none !important;
-	 padding: 3px !important;
-    border-radius: 0px;
+	padding: 3px !important;
+	border-radius: 0px;
 }
 
 .btdelete {
 	background: red !important;
 	color: white !important;
 	text-shadow: none !important;
-	 padding: 3px !important;
-    border-radius: 0px;
+	padding: 3px !important;
+	border-radius: 0px;
 }
+
 .btsearch {
 	background: #ea9a54 !important;
 	color: white !important;
 	text-shadow: none !important;
-	 padding: 3px !important;
-    border-radius: 0px;
+	padding: 3px !important;
+	border-radius: 0px;
 }
-.btlink{
-    font-style: italic;
-    background: none;
-    border: 0px !important;
-    background-image: none !important
+
+.btlink {
+	font-style: italic;
+	background: none;
+	border: 0px !important;
+	background-image: none !important
 }
-.btlink span{
-    text-decoration: underline;
+
+.btlink span {
+	text-decoration: underline;
 }
+
 .ui-progressbar .ui-progressbar-value.ui-widget-header {
-    background-color: #FF5722 !important;
+	background-color: #FF5722 !important;
 }
-.ipnumber30 input{
-	width: 30px;text-align: right;
+
+.ipnumber30 input {
+	width: 30px;
+	text-align: right;
 }
-.btsmallhong{
-       background: #E91E63 !important;
-    color: white !important;
-    border-radius: 0px !important;
-    box-sizing: no;
-    border: 0px !important;
-	}
-	.btsmallcam{
-        background: #009688 !important;
-    color: white !important;
-    border-radius: 0px !important;
-    box-sizing: no;
-    border: 0px !important;
-    padding:5px !important;
-	}
-	.fmdanhgia{
+
+.btsmallhong {
+	background: #E91E63 !important;
+	color: white !important;
+	border-radius: 0px !important;
+	box-sizing: no;
+	border: 0px !important;
+}
+
+.btsmallcam {
+	background: #009688 !important;
+	color: white !important;
+	border-radius: 0px !important;
+	box-sizing: no;
+	border: 0px !important;
+	padding: 5px !important;
+}
+
+.fmdanhgia {
 	font-size: 1.2em !important;
-    color: #E91E63;
-    font-weight: bold;
-	}
+	color: #E91E63;
+	font-weight: bold;
+}

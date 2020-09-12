@@ -1,0 +1,203 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:c="http://java.sun.com/jsp/jstl/core"
+	xmlns:pe="http://primefaces.org/ui/extensions"
+	xmlns:h="http://java.sun.com/jsf/html" template="/pages/home.xhtml">
+
+	<ui:define name="content">
+		<style>
+.sldapan label {
+	width: 90%;
+	margin-right: 0px !important;
+}
+
+.sldapan {
+	width: 100%;
+	margin: 0px;
+}
+
+.sldapan td {
+	padding: 0px;
+	text-align: left;
+}
+
+.lnumber {
+	background: #009688;
+	padding: 5px 10px;
+	color: white;
+	border-radius: 30px;
+	margin-right: 10px;
+}
+
+.lcauhoi {
+	font-size: 1.2em !important;
+	font-weight: bold;
+	color: #009688;
+}
+
+.diemdanhgia {
+	font-size: 1.1em !important;
+	text-decoration: underline !important;
+	color: #0e8bee !important;
+}
+
+.animated .ui-progressbar-value {
+	background-image: url("#{resource['images/pbar-ani.gif']}");
+}
+
+.mystyle.ui-datatable .ui-datatable-scrollable-body {
+	overflow-x: scroll !important;
+	overflow-y: hidden !important;
+}
+</style>
+		<script type="text/javascript">
+    //<![CDATA[
+    //]]>
+</script>
+		<h:form id="detail">
+			<p:fieldset style="margin-top: 10px;height:800px">
+				<p:commandButton style="float:right;width:120px" styleClass="btadd"
+					type="submit" value="Thêm" process="@form"
+					oncomplete="PF('widgetThemMonAn').show();" update="dtCategoryFood"
+					icon="ui-icon-plus" />
+				<p:dataTable value="#{caiDatDanhMucBean.categoryFoods}"
+					paginator="true" rowsPerPageTemplate="10,25,50" scrollable="true"
+					paginatorPosition="bottom" tyleClass="mystyle" rows="10"
+					scrollHeight="100%" editMode="cell" resizableColumns="true"
+					rowKey="#{item.id}" id="dtCategoryFood" var="item"
+					style="width: 100%;height:668px" rowIndexVar="rowIndex"
+					filteredValue="#{caiDatDanhMucBean.categoryFoodsFilter}">
+					<p:column headerText="STT" style="width:5%;text-align:center">
+						<h:outputText value="#{rowIndex+1}" />
+					</p:column>
+					<p:column filterBy="#{item.name}" headerText="Tên món ăn"
+						style="width:45%;text-align:center" filterMatchMode="contains">
+						<h:outputText value="#{item.name}" />
+					</p:column>
+					<p:column headerText="Hình ảnh"
+						style="width:35%; text-align:center">
+						<img src="data:image/jpg;base64, #{item.imageString()}"
+							style="max-width: 90px; max-height: 90px; object-fit: contain;" />
+					</p:column>
+					<p:column headerText="sửa" style="width:7.5%">
+						<center>
+							<p:commandLink oncomplete="PF('widgetCapNhatMonAn').show();"
+								process="@this" value=""
+								style="text-align:center;text-decoration: underline"
+								update="formCapNhatMonAn">
+								<h:outputText style="color:#8b6c09;font-size:15px"
+									class="fa fa-fw fa-edit" />
+								<f:setPropertyActionListener
+									target="#{caiDatDanhMucBean.cFoodUpdate}" value="#{item}" />
+							</p:commandLink>
+						</center>
+					</p:column>
+					<p:column headerText="Xóa" style="width:7.5%">
+						<center>
+							<p:commandLink action="#{caiDatDanhMucBean.deleteRow(item)}"
+								process="@this" value=""
+								style="text-align:center;text-decoration: underline"
+								update="dtCategoryFood">
+								<h:outputText style="color:red;font-size:15px"
+									class="fa fa-fw fa-remove" />
+							</p:commandLink>
+						</center>
+					</p:column>
+
+					<f:facet name="footer">
+						<div style="clear: both;" />
+					</f:facet>
+				</p:dataTable>
+			</p:fieldset>
+			<br />
+		</h:form>
+		<p:dialog widgetVar="widgetThemMonAn" resizable="false"
+			header="Thêm món ăn" width="500" height="350">
+			<h:form id="formThemMonAn">
+				<h:outputText value="Tên món:" style="font-weight:bold" />
+				<p:inputTextarea placeholder="Nhập tên món ăn"
+					value="#{caiDatDanhMucBean.cFoodNew.name}" style="margin-top:5px" />
+				<br />
+				<div style="margin-top: 15px">
+					<span style="font-weight: bold">Hình ảnh: </span>
+				</div>
+				<img
+					src="data:image/jpg;base64, #{caiDatDanhMucBean.cFoodNew.imageString()}"
+					style="max-width: 90px; max-height: 90px; object-fit: contain; margin-top: 5px" />
+				<div style="margin-top: 20px">
+					<p:commandLink
+						style="color: #ef3f3c;
+    											font-weight: bold;font-size:16px;"
+						value="Tải hình ảnh" oncomplete="PF('dlavatar').show();" />
+				</div>
+			</h:form>
+			<p:dialog widgetVar="dlavatar" resizable="false"
+				header="Tải hình ảnh">
+				<h:form id="formHinhAnh" enctype="multipart/form-data">
+					<p:fileUpload style="text-align:center" id="fileupload"
+						dragDropSupport="true" update="formThemMonAn,@this"
+						allowTypes="/(\.|\/)(jpg|JPG|png|PNG)$/"
+						label="Chọn file từ máy tính" cancelLabel="Huỷ"
+						uploadLabel="Tải lên" fileLimit="1"
+						fileUploadListener="#{caiDatDanhMucBean.uploadAlbum}"
+						mode="advanced" sizeLimit="10000480000">
+					</p:fileUpload>
+				</h:form>
+			</p:dialog>
+			<br />
+			<center>
+				<p:commandButton form="formThemMonAn" style="align:center;"
+					styleClass="btadd" type="submit" value="Thêm"
+					action="#{caiDatDanhMucBean.addNewItem()}" icon="ui-icon-plus"
+					update="detail,formThemMonAn" />
+			</center>
+		</p:dialog>
+		<!-- DIALOG CHINH SUA -->
+		<p:dialog widgetVar="widgetCapNhatMonAn" resizable="false"
+			header="Cập nhật món ăn" width="500" height="350">
+			<h:form id="formCapNhatMonAn">
+				<h:outputText value="Tên món:" style="font-weight:bold" />
+				<p:inputTextarea placeholder="Tên món ăn: "
+					value="#{caiDatDanhMucBean.cFoodUpdate.name}"
+					style="margin-top:5px" />
+				<div style="margin-top: 15px">
+					<span style="font-weight: bold">Hình ảnh:</span>
+				</div>
+				<img
+					src="data:image/jpg;base64, #{caiDatDanhMucBean.cFoodUpdate.imageString()}"
+					style="max-width: 120px; max-height: 120px; object-fit: contain; margin-top: 5px" />
+				<br />
+				<div style="margin-top: 20px">
+					<p:commandLink
+						style="color: #ef3f3c;
+    											font-weight: bold;font-size:16px"
+						value="Đổi hình ảnh" oncomplete="PF('dlavatar1').show();" />
+				</div>
+
+			</h:form>
+			<p:dialog widgetVar="dlavatar1" resizable="false"
+				header="Tải hình ảnh">
+				<h:form id="formHinhAnhUpdate" enctype="multipart/form-data">
+					<p:fileUpload style="text-align:center" id="fileupload"
+						dragDropSupport="true" update="formCapNhatMonAn"
+						allowTypes="/(\.|\/)(jpg|JPG|png|PNG)$/"
+						label="Chọn file từ máy tính" cancelLabel="Huỷ"
+						uploadLabel="Tải lên" fileLimit="1"
+						fileUploadListener="#{caiDatDanhMucBean.uploadAlbumUpdate}"
+						mode="advanced" sizeLimit="10000480000">
+					</p:fileUpload>
+				</h:form>
+			</p:dialog>
+			<br />
+			<center>
+				<p:commandButton form="formCapNhatMonAn" style="align:center"
+					styleClass="btsave" type="submit" value="Cập nhật"
+					action="#{caiDatDanhMucBean.updateItem()}" icon="ui-icon-plus"
+					update="detail" />
+			</center>
+		</p:dialog>
+	</ui:define>
+</ui:composition>

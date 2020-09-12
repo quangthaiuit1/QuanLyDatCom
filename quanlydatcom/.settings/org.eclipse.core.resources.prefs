@@ -1,9 +1,8 @@
 eclipse.preferences.version=1
-encoding//WebContent/resources/reports/inbangcong.jrxml=UTF-8
-encoding//WebContent/resources/reports/inbangcongnhieuthang.jrxml=UTF-8
-encoding//WebContent/resources/reports/inbangphep.jrxml=UTF-8
-encoding//WebContent/resources/reports/kpis/kpidep.jrxml=UTF-8
-encoding//WebContent/resources/reports/kpis/kpidepmonth.jrxml=UTF-8
+encoding//WebContent/resources/reports/baocaochitiet.jrxml=UTF-8
+encoding//WebContent/resources/reports/dubaosuatan.jrxml=UTF-8
+encoding//WebContent/resources/reports/dubaosuatanTemp.jrxml=UTF-8
+encoding//WebContent/resources/reports/tonkho.jrxml=UTF-8
 encoding//src/trong/lixco/com/account/servicepublics/AbstractEntity.java=UTF-8
 encoding//src/trong/lixco/com/account/servicepublics/Account.java=UTF-8
 encoding//src/trong/lixco/com/account/servicepublics/AccountServicePublic.java=UTF-8
@@ -72,7 +71,12 @@ encoding//src/trong/lixco/com/account/servicepublics/UserRightServicePublic.java
 encoding//src/trong/lixco/com/account/servicepublics/UserRightServicePublicService.java=UTF-8
 encoding//src/trong/lixco/com/account/servicepublics/UserRightServicePublicServiceLocator.java=UTF-8
 encoding//src/trong/lixco/com/account/servicepublics/UserRightServicePublicServiceSoapBindingStub.java=UTF-8
+encoding//src/trong/lixco/com/bean/AbstractBean.java=UTF-8
 encoding//src/trong/lixco/com/bean/BaoCaoBean.java=UTF-8
+encoding//src/trong/lixco/com/bean/CaiDatDanhMucBean.java=UTF-8
+encoding//src/trong/lixco/com/bean/CommonService.java=UTF-8
+encoding//src/trong/lixco/com/bean/DangKyComBean.java=UTF-8
+encoding//src/trong/lixco/com/bean/entities/ConnectivityFinger.java=UTF-8
 encoding//src/trong/lixco/com/servicepublic/EmpPJobDTO.java=UTF-8
 encoding//src/trong/lixco/com/servicepublic/EmpPJobServicePublic.java=UTF-8
 encoding//src/trong/lixco/com/servicepublic/EmpPJobServicePublicService.java=UTF-8

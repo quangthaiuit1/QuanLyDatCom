@@ -14,5 +14,5 @@ public interface ImplAbstract<T> {
 	boolean delete(T device);
 	
 	List<T> findAll();
-
+	
 }

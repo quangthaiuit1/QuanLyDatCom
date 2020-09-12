@@ -12,26 +12,26 @@ import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
 
-public abstract	class AbstractService<T> implements ImplAbstract<T> {
-	
+public abstract class AbstractService<T> implements ImplAbstract<T> {
+
 	protected abstract Class<T> getEntityClass();
-	
+
 	protected abstract EntityManager getEntityManager();
-	
+
 	protected abstract SessionContext getUt();
-	
+
 	@Override
-	public T create(T entity){
+	public T create(T entity) {
 		getEntityManager().persist(entity);
 		return getEntityManager().merge(entity);
 	}
-	
+
 	@Override
-	public T update(T account){
+	public T update(T account) {
 		return getEntityManager().merge(account);
 
 	}
-	
+
 	@Override
 	@TransactionAttribute(TransactionAttributeType.REQUIRED)
 	public boolean delete(T account) {
@@ -52,9 +52,10 @@ public abstract	class AbstractService<T> implements ImplAbstract<T> {
 	public T findById(long id) {
 		return getEntityManager().find(getEntityClass(), id);
 	}
+
 	@Override
 	public T findByIdLockWrite(long id) {
-		return getEntityManager().find(getEntityClass(), id,LockModeType.PESSIMISTIC_WRITE);
+		return getEntityManager().find(getEntityClass(), id, LockModeType.PESSIMISTIC_WRITE);
 	}
 
 	@Override
@@ -67,7 +68,5 @@ public abstract	class AbstractService<T> implements ImplAbstract<T> {
 
 		return query.getResultList();
 	}
-	
 
-	
 }
