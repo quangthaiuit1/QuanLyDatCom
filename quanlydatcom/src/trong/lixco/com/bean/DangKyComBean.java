@@ -24,8 +24,10 @@ import trong.lixco.com.account.servicepublics.MemberServicePublicProxy;
 import trong.lixco.com.bean.staticentity.Notification;
 import trong.lixco.com.bean.staticentity.ShiftsUtil;
 import trong.lixco.com.ejb.service.FoodDayByDayService;
+import trong.lixco.com.ejb.service.OrderAndFoodByDateService;
 import trong.lixco.com.ejb.service.OrderFoodService;
 import trong.lixco.com.jpa.entity.FoodByDay;
+import trong.lixco.com.jpa.entity.OrderAndFoodByDate;
 import trong.lixco.com.jpa.entity.OrderFood;
 import trong.lixco.com.servicepublic.EmployeeDTO;
 import trong.lixco.com.servicepublic.EmployeeServicePublic;
@@ -90,13 +92,16 @@ public class DangKyComBean extends AbstractBean<OrderFood> {
 	@EJB
 	private FoodDayByDayService FOOD_BY_DAY_SERVICE;
 
+	@EJB 
+	private OrderAndFoodByDateService ORDER_AND_FOOD_BY_DATE_SERVICE; 
+	
 	EmployeeServicePublic EMPLOYEE_SERVICE_PUBLIC;
 
 	private Date startDate;
 	private Date endDate;
 	private int week;
 	private int yearOfWeek;
-
+	private List<OrderAndFoodByDate> ofsByDate;
 	public void ajax_setDate() {
 		LocalDate lc = new LocalDate();
 		startDate = lc.withWeekOfWeekyear(week).withYear(yearOfWeek).dayOfWeek().withMinimumValue().toDate();
@@ -105,6 +110,7 @@ public class DangKyComBean extends AbstractBean<OrderFood> {
 
 	@Override
 	public void initItem() {
+		ofsByDate = ORDER_AND_FOOD_BY_DATE_SERVICE.findAll();
 //		food1Selected = new FoodDayByDay();
 //		food2Selected = new FoodDayByDay();
 //		food3Selected = new FoodDayByDay();
