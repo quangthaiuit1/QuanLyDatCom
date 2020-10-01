@@ -29,6 +29,8 @@ public class AbstractEntity {
 	
 	@Column(name = "created_user")
 	protected String createdUser;
+	@Column(name = "modified_user")
+	protected String modifiedUser;
 	@Column(columnDefinition = "TEXT")
 	protected String note;
 	private boolean disable=false;// tat nhan vien
@@ -104,6 +106,12 @@ public class AbstractEntity {
 	}
 	public void setColor(boolean color) {
 		this.color = color;
+	}
+	public String getModifiedUser() {
+		return modifiedUser;
+	}
+	public void setModifiedUser(String modifiedUser) {
+		this.modifiedUser = modifiedUser;
 	}
 	@Override
 	public int hashCode() {

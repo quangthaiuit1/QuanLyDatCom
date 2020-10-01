@@ -60,22 +60,20 @@ public class AuthorizationManager implements Serializable {
 	private UserRightServicePublic userRightServicePublic;
 	private ProgramServicePublic programServicePublic;
 
-
 	@PostConstruct
 	public void init() {
 		accountServicePublic = new AccountServicePublicProxy();
 		userRightServicePublic = new UserRightServicePublicProxy();
 		programServicePublic = new ProgramServicePublicProxy();
 
-		
-
 		urlPermissions = new ArrayList<UrlPermission>();
 		uriUnprotected = new ArrayList<String>();
 		uriUnprotected.add("/quanlydatcom/pages/home.htm");
+		uriUnprotected.add("/quanlydatcom/pages/dangkycom.htm");
 	}
 
 	public Program getProgram() {
-		
+
 		try {
 			return programServicePublic.findByName(NameSytem.NAMEPROGRAM);
 		} catch (RemoteException e) {

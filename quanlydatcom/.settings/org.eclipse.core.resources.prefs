@@ -1,6 +1,11 @@
 eclipse.preferences.version=1
-encoding//WebContent/resources/reports/baocaochitiet.jrxml=UTF-8
-encoding//WebContent/resources/reports/dubaosuatan.jrxml=UTF-8
+encoding//WebContent/resources/reports/bcchinhxacsuatan.jrxml=UTF-8
+encoding//WebContent/resources/reports/bcchitietsuatan.jrxml=UTF-8
+encoding//WebContent/resources/reports/bcdubaosuatannhanvien.jrxml=UTF-8
+encoding//WebContent/resources/reports/bcsochenhlech.jrxml=UTF-8
+encoding//WebContent/resources/reports/bctonghopdubaosuatan.jrxml=UTF-8
+encoding//WebContent/resources/reports/bctonghopsuatan.jrxml=UTF-8
+encoding//WebContent/resources/reports/dubaochitietsuatan.jrxml=UTF-8
 encoding//WebContent/resources/reports/dubaosuatanTemp.jrxml=UTF-8
 encoding//WebContent/resources/reports/tonkho.jrxml=UTF-8
 encoding//src/trong/lixco/com/account/servicepublics/AbstractEntity.java=UTF-8
@@ -73,10 +78,12 @@ encoding//src/trong/lixco/com/account/servicepublics/UserRightServicePublicServi
 encoding//src/trong/lixco/com/account/servicepublics/UserRightServicePublicServiceSoapBindingStub.java=UTF-8
 encoding//src/trong/lixco/com/bean/AbstractBean.java=UTF-8
 encoding//src/trong/lixco/com/bean/BaoCaoBean.java=UTF-8
+encoding//src/trong/lixco/com/bean/BaoSuatAnBean.java=UTF-8
 encoding//src/trong/lixco/com/bean/CaiDatDanhMucBean.java=UTF-8
 encoding//src/trong/lixco/com/bean/CommonService.java=UTF-8
 encoding//src/trong/lixco/com/bean/DangKyComBean.java=UTF-8
 encoding//src/trong/lixco/com/bean/entities/ConnectivityFinger.java=UTF-8
+encoding//src/trong/lixco/com/bean/staticentity/ShiftsUtil.java=UTF-8
 encoding//src/trong/lixco/com/servicepublic/EmpPJobDTO.java=UTF-8
 encoding//src/trong/lixco/com/servicepublic/EmpPJobServicePublic.java=UTF-8
 encoding//src/trong/lixco/com/servicepublic/EmpPJobServicePublicService.java=UTF-8

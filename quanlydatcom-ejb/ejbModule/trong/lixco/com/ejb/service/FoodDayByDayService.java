@@ -20,7 +20,6 @@ import javax.persistence.criteria.Root;
 
 import trong.lixco.com.jpa.entity.FoodByDay;
 
-
 @Stateless
 @TransactionManagement(TransactionManagementType.CONTAINER)
 public class FoodDayByDayService extends AbstractService<FoodByDay> {
@@ -31,23 +30,20 @@ public class FoodDayByDayService extends AbstractService<FoodByDay> {
 
 	@Override
 	protected Class<FoodByDay> getEntityClass() {
-		// TODO Auto-generated method stub
 		return FoodByDay.class;
 	}
 
 	@Override
 	protected EntityManager getEntityManager() {
-		// TODO Auto-generated method stub
 		return em;
 	}
 
 	@Override
 	protected SessionContext getUt() {
-		// TODO Auto-generated method stub
 		return ct;
 	}
 
-	public List<FoodByDay> findByDate(Date date, int shiftsId) {
+	public List<FoodByDay> findByDate(Date date, long shiftsId) {
 		// primary
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<FoodByDay> cq = cb.createQuery(FoodByDay.class);
@@ -76,7 +72,7 @@ public class FoodDayByDayService extends AbstractService<FoodByDay> {
 			return new ArrayList<FoodByDay>();
 		}
 	}
-	
+
 	public List<FoodByDay> findByDate(Date date, int shifts, long categoryFood_id) {
 		// primary
 		CriteriaBuilder cb = em.getCriteriaBuilder();
@@ -110,8 +106,38 @@ public class FoodDayByDayService extends AbstractService<FoodByDay> {
 			return new ArrayList<FoodByDay>();
 		}
 	}
-	
-	//Native query
+
+	public List<FoodByDay> findByDayToDaySortByDate(java.util.Date firstDay, java.util.Date lastDay) {
+		// primary
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<FoodByDay> cq = cb.createQuery(FoodByDay.class);
+		Root<FoodByDay> root = cq.from(FoodByDay.class);
+		List<Predicate> queries = new ArrayList<>();
+		if (firstDay != null) {
+			Predicate resultQueryFirst = cb.greaterThanOrEqualTo(root.get("food_date"), firstDay);
+			queries.add(resultQueryFirst);
+		}
+		if (lastDay != null) {
+			Predicate resultQueryLast = cb.lessThanOrEqualTo(root.get("food_date"), lastDay);
+			queries.add(resultQueryLast);
+		}
+		Predicate data[] = new Predicate[queries.size()];
+		for (int i = 0; i < queries.size(); i++) {
+			data[i] = queries.get(i);
+		}
+		Predicate finalPredicate = cb.and(data);
+		cq.select(root).where(finalPredicate).orderBy(cb.asc(root.get("food_date")),
+				cb.asc(root.get("shifts").get("id")));
+		TypedQuery<FoodByDay> query = em.createQuery(cq);
+		List<FoodByDay> results = query.getResultList();
+		if (!results.isEmpty()) {
+			return results;
+		} else {
+			return new ArrayList<FoodByDay>();
+		}
+	}
+
+	// Native query
 	public void deleteFoodByDayByDate(Date date) {
 		try {
 			String sql = "DELETE FROM FoodDayByDay WHERE FoodDayByDay_date = ?";
@@ -121,7 +147,7 @@ public class FoodDayByDayService extends AbstractService<FoodByDay> {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		
+
 	}
 
 }

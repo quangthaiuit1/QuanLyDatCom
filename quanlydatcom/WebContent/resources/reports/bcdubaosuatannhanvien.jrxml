@@ -1,0 +1,197 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Created with Jaspersoft Studio version 6.11.0.final using JasperReports Library version 6.11.0-0c4056ccaa4d25a5a8c45672d2f764ea3498bebb  -->
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="bcchitietsuanan" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="d51577d2-8eef-4029-8dfe-84466ff72832">
+	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="One Empty Record"/>
+	<parameter name="logo" class="java.lang.String"/>
+	<parameter name="employeeName" class="java.lang.String"/>
+	<queryString>
+		<![CDATA[]]>
+	</queryString>
+	<field name="order_food.registration_date" class="java.util.Date"/>
+	<field name="food_by_day.shifts.name" class="java.lang.String"/>
+	<field name="food_by_day.category_food.name" class="java.lang.String"/>
+	<group name="Group1">
+		<groupExpression><![CDATA[$F{order_food.registration_date}]]></groupExpression>
+		<groupHeader>
+			<band height="30">
+				<rectangle>
+					<reportElement x="0" y="0" width="553" height="30" backcolor="#FFFFFF" uuid="46ba81d3-ab63-481d-b408-4400175b252e"/>
+					<graphicElement>
+						<pen lineWidth="0.25"/>
+					</graphicElement>
+				</rectangle>
+				<textField pattern="dd-MM-yyyy">
+					<reportElement x="0" y="0" width="110" height="30" uuid="eb8f9f57-cafd-453d-b357-4688c48b8a3f"/>
+					<box>
+						<pen lineWidth="0.25"/>
+					</box>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="FontReport" size="14"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{order_food.registration_date}]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement x="110" y="0" width="120" height="30" uuid="13721b37-46f3-480e-b417-f0def79e3f27"/>
+					<box>
+						<pen lineWidth="0.25"/>
+					</box>
+					<text><![CDATA[]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="230" y="0" width="322" height="30" uuid="a4d889b0-3997-4afd-97c8-62f38116ea4f"/>
+					<box>
+						<pen lineWidth="0.25"/>
+						<topPen lineWidth="0.25" lineStyle="Solid" lineColor="#000000"/>
+						<leftPen lineWidth="0.25" lineStyle="Solid" lineColor="#000000"/>
+						<bottomPen lineWidth="0.25" lineStyle="Solid" lineColor="#000000"/>
+						<rightPen lineWidth="0.25" lineStyle="Solid" lineColor="#000000"/>
+					</box>
+					<text><![CDATA[]]></text>
+				</staticText>
+			</band>
+		</groupHeader>
+	</group>
+	<group name="Group2">
+		<groupExpression><![CDATA[$F{food_by_day.shifts.name}]]></groupExpression>
+		<groupHeader>
+			<band height="30">
+				<rectangle>
+					<reportElement x="0" y="0" width="553" height="30" backcolor="#FFFFFF" uuid="d4eda003-3f25-43a9-aa92-56e7a7810872">
+						<property name="com.jaspersoft.studio.unit.width" value="px"/>
+						<property name="com.jaspersoft.studio.unit.height" value="px"/>
+					</reportElement>
+					<graphicElement>
+						<pen lineWidth="0.25"/>
+					</graphicElement>
+				</rectangle>
+				<rectangle>
+					<reportElement x="110" y="0" width="120" height="30" uuid="b7a10f9d-0a5d-4223-a56a-80de5af9653f"/>
+					<graphicElement>
+						<pen lineWidth="0.25" lineStyle="Solid"/>
+					</graphicElement>
+				</rectangle>
+				<staticText>
+					<reportElement x="0" y="0" width="110" height="30" uuid="bba546e3-550e-40f1-8252-19a48e7214b7">
+						<property name="com.jaspersoft.studio.unit.height" value="px"/>
+					</reportElement>
+					<box>
+						<pen lineWidth="0.25"/>
+					</box>
+					<text><![CDATA[]]></text>
+				</staticText>
+				<textField>
+					<reportElement x="110" y="0" width="120" height="30" uuid="f97f3683-4011-4c9c-9801-cb037112143f">
+						<property name="com.jaspersoft.studio.unit.height" value="px"/>
+						<property name="com.jaspersoft.studio.unit.width" value="px"/>
+					</reportElement>
+					<box>
+						<pen lineWidth="0.25"/>
+						<topPen lineWidth="0.25" lineStyle="Solid" lineColor="#000000"/>
+						<leftPen lineWidth="0.25" lineStyle="Solid" lineColor="#000000"/>
+						<bottomPen lineWidth="0.25" lineStyle="Solid" lineColor="#000000"/>
+						<rightPen lineWidth="0.25" lineStyle="Solid" lineColor="#000000"/>
+					</box>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="FontReport" size="13"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{food_by_day.shifts.name}]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="230" y="0" width="322" height="30" uuid="f0f1e41f-87b1-4c83-b0cc-e93e082d7c73">
+						<property name="com.jaspersoft.studio.unit.width" value="px"/>
+					</reportElement>
+					<box>
+						<pen lineWidth="0.25"/>
+					</box>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="FontReport" size="13"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{food_by_day.category_food.name}]]></textFieldExpression>
+				</textField>
+			</band>
+		</groupHeader>
+	</group>
+	<group name="Group3">
+		<groupExpression><![CDATA[$F{food_by_day.category_food.name}]]></groupExpression>
+	</group>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<title>
+		<band height="45" splitType="Stretch">
+			<staticText>
+				<reportElement x="77" y="0" width="475" height="40" forecolor="#000000" uuid="0027dade-c014-4f33-a301-dcea4a165cfe">
+					<property name="com.jaspersoft.studio.unit.x" value="px"/>
+				</reportElement>
+				<textElement textAlignment="Center" verticalAlignment="Top">
+					<font fontName="FontReport" size="18" isBold="true"/>
+				</textElement>
+				<text><![CDATA[CHI TIẾT SUẤT ĂN]]></text>
+			</staticText>
+			<image hAlign="Center" vAlign="Middle">
+				<reportElement x="0" y="0" width="80" height="41" uuid="6ef42b15-2a6e-4ddd-9002-e6a106a95373"/>
+				<imageExpression><![CDATA[$P{logo}]]></imageExpression>
+			</image>
+			<staticText>
+				<reportElement x="237" y="19" width="68" height="20" uuid="c5da6c6f-cd15-468f-ae5b-5695c931ff8e"/>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font fontName="FontReport" size="13"/>
+				</textElement>
+				<text><![CDATA[Nhân viên:]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="298" y="19" width="120" height="20" uuid="f4deace3-a3a3-485b-a106-7cabcbbac41f"/>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font fontName="FontReport" size="13"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{employeeName}]]></textFieldExpression>
+			</textField>
+		</band>
+	</title>
+	<pageHeader>
+		<band height="48" splitType="Stretch">
+			<rectangle>
+				<reportElement x="0" y="8" width="553" height="40" uuid="06362d01-1b72-4696-81a9-e309757ecbd2"/>
+				<graphicElement>
+					<pen lineWidth="0.25"/>
+				</graphicElement>
+			</rectangle>
+			<staticText>
+				<reportElement x="0" y="8" width="110" height="40" uuid="c9d9e5bf-2629-4349-8c8b-309516422896"/>
+				<box>
+					<pen lineWidth="0.25"/>
+					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.25" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="0.25" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="FontReport" size="16"/>
+				</textElement>
+				<text><![CDATA[Ngày]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="110" y="8" width="120" height="40" uuid="84c37ad7-f4a5-4cfe-a84d-594e15c4cac2">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</reportElement>
+				<box>
+					<pen lineWidth="0.25"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="FontReport" size="16"/>
+				</textElement>
+				<text><![CDATA[Ca làm việc]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="230" y="8" width="322" height="40" uuid="e05d60b2-1f00-4ec4-a00e-874a0df99775"/>
+				<box bottomPadding="1">
+					<pen lineWidth="0.25"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="FontReport" size="16"/>
+				</textElement>
+				<text><![CDATA[Tên món ăn]]></text>
+			</staticText>
+		</band>
+	</pageHeader>
+</jasperReport>

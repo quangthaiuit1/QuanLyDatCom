@@ -54,9 +54,30 @@
 </script>
 		<h:form id="detail">
 			<p:fieldset style="margin-top: 10px">
+				<div class="ui-g" style="width: 48%; margin: 0 auto">
+					<div class="ui-g-4" style="margin-top: 5px">
+						<p:calendar styleClass="stwidth" locale="vi"
+							value="#{caiDatMonAnBean.dateDetailFromDate}"
+							id="dateDetaiFromDate" pattern="#{applicationBean.cf.formatDate}"
+							showButtonPanel="true" navigator="true"
+							mask="#{applicationBean.cf.maskDate}" />
+					</div>
+					<div class="ui-g-4" style="margin-top: 5px">
+						<p:calendar styleClass="stwidth" locale="vi"
+							value="#{caiDatMonAnBean.dateDetailToDate}" id="dateDetaiToDate"
+							pattern="#{applicationBean.cf.formatDate}" showButtonPanel="true"
+							navigator="true" mask="#{applicationBean.cf.maskDate}" />
+					</div>
+					<div class="ui-g-4">
+						<p:commandButton styleClass="btsearch" type="submit"
+							value="Xem chi tiết"
+							actionListener="#{caiDatMonAnBean.showPDFDetailFromDateToDate()}" />
+					</div>
+				</div>
+				<p:separator />
 				<div class="ui-g">
 					<div class="ui-g-6">
-						<p:fieldset id="fieldsetDay" legend="Chọn:"
+						<p:fieldset id="fieldsetDay" legend="Ngày*"
 							styleClass="noneformatfs"
 							style="width:50% ;height:60px;float:right">
 							<p:calendar styleClass="stwidth" locale="vi"
@@ -71,7 +92,7 @@
 						</p:fieldset>
 					</div>
 					<div class="ui-g-6">
-						<p:fieldset id="fieldsetShifts" legend="Chọn ca"
+						<p:fieldset id="fieldsetShifts" legend="Ca*"
 							styleClass="noneformatfs"
 							style="width:50%;height:60px;float:left">
 							<p:selectOneMenu id="console" value="#{caiDatMonAnBean.shifts}"
@@ -92,16 +113,19 @@
 						</p:fieldset>
 					</div>
 				</div>
-				<p:fieldset>
-					<p:commandButton style="float:right;width:120px" styleClass="btadd"
-						type="submit" value="Thêm" process="@form"
-						action="#{caiDatMonAnBean.convertCategoryFoodToSelected()}"
-						oncomplete="PF('dialogFoodChoose').show();"
-						update=":formChonMonAn:dtFoodChoose" icon="ui-icon-plus" />
+				<p:fieldset style="height:610px">
+					<div class="ui-g" style="margin-left: 89%">
+						<p:commandButton style="float:right;width:120px"
+							styleClass="btadd" type="submit" value="Thêm" process="@form"
+							action="#{caiDatMonAnBean.convertCategoryFoodToSelected()}"
+							oncomplete="PF('dialogFoodChoose').show();"
+							update=":formChonMonAn:dtFoodChoose" icon="ui-icon-plus" />
+					</div>
 					<p:dataTable value="#{caiDatMonAnBean.foodsByDate}"
-						tyleClass="tableformat1" editable="true" scrollHeight="700"
-						editMode="cell" resizableColumns="true" rowKey="#{item.id}"
-						id="dtFood" var="item" style="width:100%" rowIndexVar="rowIndex">
+						rowsPerPageTemplate="10,25,50" scrollable="true" paginator="true"
+						paginatorPosition="bottom" tyleClass="tableformat1"
+						scrollHeight="100%" rowKey="#{item.id}" id="dtFood" var="item"
+						style="width:100%;height:528px" rowIndexVar="rowIndex">
 						<p:column headerText="STT" style="width:5%;text-align:center">
 							<h:outputText value="#{rowIndex+1}" />
 						</p:column>
@@ -143,8 +167,9 @@
 			id="idDialogFoodChoose">
 			<h:form id="formChonMonAn">
 				<p:dataTable var="item" value="#{caiDatMonAnBean.categoryFoods}"
-				paginator="true" rows="10" rowsPerPageTemplate="10,25,50" paginatorPosition="bottom"
-					scrollable="true" scrollHeight="100%" style="height:800px"
+					paginator="true" rows="10" rowsPerPageTemplate="10,25,50"
+					paginatorPosition="bottom" scrollable="true" scrollHeight="100%"
+					style="height:800px"
 					selection="#{caiDatMonAnBean.categoryFoodsSelected}"
 					rowKey="#{item.id}" id="dtFoodChoose"
 					filteredValue="#{caiDatMonAnBean.categoryFoodsFilter}">

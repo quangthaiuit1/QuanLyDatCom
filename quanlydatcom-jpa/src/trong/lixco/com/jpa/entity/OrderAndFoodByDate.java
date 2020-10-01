@@ -8,17 +8,19 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
 @Entity
-@Table(name="order_food_by_date")
+@Table(name = "order_food_by_day")
 public class OrderAndFoodByDate {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private long id;
-	
+
 	@ManyToOne
 	private OrderFood order_food;
-	
-	@ManyToOne 
-	private FoodByDay food_by_date;
+
+	@ManyToOne
+	private FoodByDay food_by_day;
+
+	private int quantity_plus;
 
 	public long getId() {
 		return id;
@@ -36,11 +38,19 @@ public class OrderAndFoodByDate {
 		this.order_food = order_food;
 	}
 
-	public FoodByDay getFood_by_date() {
-		return food_by_date;
+	public FoodByDay getFood_by_day() {
+		return food_by_day;
 	}
 
-	public void setFood_by_date(FoodByDay food_by_date) {
-		this.food_by_date = food_by_date;
+	public void setFood_by_day(FoodByDay food_by_day) {
+		this.food_by_day = food_by_day;
+	}
+
+	public int getQuantity_plus() {
+		return quantity_plus;
+	}
+
+	public void setQuantity_plus(int quantity_plus) {
+		this.quantity_plus = quantity_plus;
 	}
 }

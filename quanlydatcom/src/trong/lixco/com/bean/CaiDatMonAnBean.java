@@ -38,6 +38,9 @@ public class CaiDatMonAnBean extends AbstractBean<OrderFood> {
 	private int shifts2;
 	private int shifts3;
 
+	private Date dateDetailFromDate;
+	private Date dateDetailToDate;
+
 	@EJB
 	private FoodDayByDayService FOOD_DAYBYDAY_SERVICE;
 	@EJB
@@ -49,6 +52,8 @@ public class CaiDatMonAnBean extends AbstractBean<OrderFood> {
 	protected void initItem() {
 		// init variable
 		dateSearch = new Date();
+		dateDetailFromDate = new Date();
+		dateDetailToDate = new Date();
 		dateSearchSQL = new java.sql.Date(dateSearch.getTime());
 		try {
 			foodsByDate = FOOD_DAYBYDAY_SERVICE.findByDate(dateSearchSQL, shifts);
@@ -59,6 +64,7 @@ public class CaiDatMonAnBean extends AbstractBean<OrderFood> {
 		shifts1 = ShiftsUtil.SHIFTS1_ID;
 		shifts2 = ShiftsUtil.SHIFTS2_ID;
 		shifts3 = ShiftsUtil.SHIFTS3_ID;
+
 	}
 
 	public void convertCategoryFoodToSelected() {
@@ -139,6 +145,12 @@ public class CaiDatMonAnBean extends AbstractBean<OrderFood> {
 			}
 		} catch (Exception e) {
 		}
+	}
+
+	public void showPDFDetailFromDateToDate() {
+		List<FoodByDay> foods = FOOD_DAYBYDAY_SERVICE.findByDayToDaySortByDate(dateDetailFromDate, dateDetailToDate);
+		
+		System.out.println(foods.size());
 	}
 
 	public void handleChooseFood() {
@@ -257,5 +269,21 @@ public class CaiDatMonAnBean extends AbstractBean<OrderFood> {
 
 	public void setShifts3(int shifts3) {
 		this.shifts3 = shifts3;
+	}
+
+	public Date getDateDetailFromDate() {
+		return dateDetailFromDate;
+	}
+
+	public void setDateDetailFromDate(Date dateDetailFromDate) {
+		this.dateDetailFromDate = dateDetailFromDate;
+	}
+
+	public Date getDateDetailToDate() {
+		return dateDetailToDate;
+	}
+
+	public void setDateDetailToDate(Date dateDetailToDate) {
+		this.dateDetailToDate = dateDetailToDate;
 	}
 }

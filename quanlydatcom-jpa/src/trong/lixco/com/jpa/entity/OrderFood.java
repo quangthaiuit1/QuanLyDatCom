@@ -9,78 +9,62 @@ import javax.persistence.Table;
 
 @Entity
 @Table(name = "order_Food")
-public class OrderFood extends AbstractEntity{
+public class OrderFood extends AbstractEntity {
 	@Column(name = "employee_code")
 	private String employeeCode;
 	@Column(name = "employee_name")
 	private String employeeName;
-	
-	@OneToOne
-	private FoodByDay food_by_date_shifts1;
-	
-	@OneToOne
-	private FoodByDay food_by_date_shifts2;
-	
-	@OneToOne
-	private FoodByDay food_by_date_shifts3;
-	
+
 	private Date registration_date;
 	private String employee_id;
 	private String department_code;
 	private String department_name;
-	
+
 	public String getDepartment_code() {
 		return department_code;
 	}
+
 	public void setDepartment_code(String department_code) {
 		this.department_code = department_code;
 	}
+
 	public String getDepartment_name() {
 		return department_name;
 	}
+
 	public void setDepartment_name(String department_name) {
 		this.department_name = department_name;
 	}
+
 	public String getEmployee_id() {
 		return employee_id;
 	}
+
 	public void setEmployee_id(String employee_id) {
 		this.employee_id = employee_id;
 	}
+
 	public String getEmployeeCode() {
 		return employeeCode;
 	}
+
 	public void setEmployeeCode(String employeeCode) {
 		this.employeeCode = employeeCode;
 	}
+
 	public Date getRegistration_date() {
 		return registration_date;
 	}
+
 	public void setRegistration_date(Date registration_date) {
 		this.registration_date = registration_date;
 	}
+
 	public String getEmployeeName() {
 		return employeeName;
 	}
+
 	public void setEmployeeName(String employeeName) {
 		this.employeeName = employeeName;
-	}
-	public FoodByDay getFood_by_date_shifts1() {
-		return food_by_date_shifts1;
-	}
-	public void setFood_by_date_shifts1(FoodByDay food_by_date_shifts1) {
-		this.food_by_date_shifts1 = food_by_date_shifts1;
-	}
-	public FoodByDay getFood_by_date_shifts2() {
-		return food_by_date_shifts2;
-	}
-	public void setFood_by_date_shifts2(FoodByDay food_by_date_shifts2) {
-		this.food_by_date_shifts2 = food_by_date_shifts2;
-	}
-	public FoodByDay getFood_by_date_shifts3() {
-		return food_by_date_shifts3;
-	}
-	public void setFood_by_date_shifts3(FoodByDay food_by_date_shifts3) {
-		this.food_by_date_shifts3 = food_by_date_shifts3;
 	}
 }

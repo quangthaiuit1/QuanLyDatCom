@@ -95,89 +95,130 @@
 								id="endDate" showButtonPanel="true" navigator="true"
 								mask="#{applicationBean.cf.maskDate}" />
 						</h:panelGrid>
-						<h:panelGrid columns="1" styleClass="noneformat" cellspacing="5"
-							columnClasses="w50,w50" style="text-align:center">
-							<p:commandButton styleClass="btsearch"
-								style="margin-left: 25%;margin-top:20px" type="submit"
+						<h:panelGrid columns="3" styleClass="noneformat" cellspacing="5"
+							columnClasses="w50,w50" style="text-align:center;width:100%">
+							<p:commandButton styleClass="btsave"
+								style="margin-left: 0%;margin-top:20px" type="submit"
 								value="Tìm kiếm" process="@form"
 								action="#{dangKyComBean.findData()}" update="dtOrderFood"
 								icon="ui-icon-search" />
+							<p:commandButton style="float:right;margin-top:20px"
+								styleClass="btsearch" type="submit" value="Chi tiết (PDF)"
+								ajax="false"
+								actionListener="#{dangKyComBean.showReportFoodPDF()}"
+								onclick="this.form.target='_blank'" />
 						</h:panelGrid>
 					</p:fieldset>
 				</center>
 			</p:fieldset>
 			<p:fieldset>
-				<p:dataTable value="#{dangKyComBean.orderFoods}" rowKey="#{item.id}"
-					id="dtOrderFood" var="item">
+				<center>
+					<p:dataTable value="#{dangKyComBean.orderFoods}"
+						rowKey="#{item.id}" id="dtOrderFood" var="item" style="width: 50%">
 
-					<p:column headerText="Ngày" width="15">
-						<center>
-							<h:outputText value="#{item.registration_date}">
-								<f:convertDateTime type="date" pattern="dd-MM-yyyy" />
-							</h:outputText>
-						</center>
-					</p:column>
-					<p:column headerText="Tên món ăn ca 1"
-						style="width:50px;text-align:center">
-						<img
-							src="data:image/jpg;base64, #{item.food_by_date_shifts1.category_food.imageString()}"
-							style="max-width: 90px; max-height: 90px; object-fit: contain; float: left" />
-						<h:outputText
-							value="#{item.food_by_date_shifts1.category_food.name}"
-							style="vertical-align: middle! important" />
-					</p:column>
-					<p:column headerText=""
-						style="font-style:italic;width:8px; text-align:center">
-						<p:commandLink action="#{dangKyComBean.showListFoodShift1(item)}"
-							oncomplete="PF('dialogFoodShifts1').show();" process="@this"
-							value="Chọn" style="text-align:center;text-decoration: underline"
-							update="idDialogFoodShifts1" />
-					</p:column>
-					<p:column headerText="Tên món ăn ca 2"
-						style="width:50px;text-align:center">
-						<img
-							src="data:image/jpg;base64, #{item.food_by_date_shifts2.category_food.imageString()}"
-							style="max-width: 90px; max-height: 90px; object-fit: contain; float: left" />
-						<h:outputText
-							value="#{item.food_by_date_shifts2.category_food.name}" />
-					</p:column>
-					<p:column headerText=""
-						style="font-style:italic;width:10px; text-align:center">
-						<p:commandLink action="#{dangKyComBean.showListFoodShift2(item)}"
-							oncomplete="PF('dialogFoodShifts2').show();" process="@this"
-							value="Chọn" style="text-align:center;text-decoration: underline"
-							update="idDialogFoodShifts2" />
-					</p:column>
-					<p:column headerText="Tên món ăn ca 3"
-						style="width:50px;text-align:center">
-						<img
-							src="data:image/jpg;base64, #{item.food_by_date_shifts3.category_food.imageString()}"
-							style="max-width: 90px; max-height: 90px; object-fit: contain; float: left" />
-						<h:outputText
-							value="#{item.food_by_date_shifts3.category_food.name}" />
-					</p:column>
-					<p:column headerText=""
-						style="font-style:italic;width:7px; text-align:center">
-						<p:commandLink action="#{dangKyComBean.showListFoodShift3(item)}"
-							oncomplete="PF('dialogFoodShifts3').show();" process="@this"
-							value="Chọn" style="text-align:center;text-decoration: underline"
-							update="idDialogFoodShifts3" />
-					</p:column>
-					<f:facet name="footer">
-						<div style="clear: both;" />
-					</f:facet>
-				</p:dataTable>
+						<p:column headerText="Ngày" width="15">
+							<center>
+								<h:outputText value="#{item.registration_date}">
+									<f:convertDateTime type="date" pattern="dd-MM-yyyy" />
+								</h:outputText>
+							</center>
+						</p:column>
+						<p:column headerText="..." width="15">
+							<center>
+								<p:commandLink value="Chi tiết"
+									action="#{dangKyComBean.handleDataDialogDetail(item)}"
+									update=":formDetail:dtFoodShifts1,outputShowDate"
+									style="color: blue;font-style: italic;text-decoration: underline;" />
+							</center>
+						</p:column>
+						<f:facet name="footer">
+							<div style="clear: both;" />
+						</f:facet>
+					</p:dataTable>
+				</center>
 			</p:fieldset>
 			<br />
 		</h:form>
-		<p:dialog widgetVar="dialogFoodShifts1" width="800" resizable="false"
-			closeOnEscape="true" header="Chọn món ca 1" id="idDialogFoodShifts1">
-			<h:form>
-				<p:dataTable var="item" value="#{dangKyComBean.foodsShifts1}"
+		<!-- DIALOG HANDLE SHOW CHI TIET -->
+		<p:dialog widgetVar="wdvDialogShowDetail" width="800" height="400"
+			resizable="false" closeOnEscape="true" header="Chi tiết"
+			id="idDialogShowDetail">
+			<center>
+				<h:outputText value="#{dangKyComBean.dateItemSelected}"
+					id="outputShowDate" style="font-size:25px;font-weight:bold">
+					<f:convertDateTime type="date" pattern="dd-MM-yyyy" />
+				</h:outputText>
+			</center>
+			<h:form id="formDetail" style="margin-top:10px">
+				<p:dataTable var="item" value="#{dangKyComBean.ofsByDate}"
+					rowKey="#{item.id}" id="dtFoodShifts1" scrollHeight="370"
+					style="height:300px">
+					<p:column headerText="Ca làm việc">
+						<center>
+							<h:outputText value="#{item.food_by_day.shifts.name}" />
+						</center>
+					</p:column>
+					<p:column headerText="Tên món">
+						<center>
+							<h:outputText value="#{item.food_by_day.category_food.name}" />
+						</center>
+					</p:column>
+					<p:column headerText="Hình ảnh">
+						<center>
+							<p:column headerText="Hình ảnh" width="15px"
+								style="text-align:center">
+								<img
+									src="data:image/jpg;base64, #{item.food_by_day.category_food.imageString()}"
+									style="max-width: 90px; max-height: 90px; object-fit: contain;" />
+							</p:column>
+						</center>
+					</p:column>
+					<p:column headerText="">
+						<center>
+							<p:commandLink value="Xóa"
+								action="#{dangKyComBean.deleteOrderFood(item)}"
+								update=":formDetail:dtFoodShifts1"
+								style="color: red;font-style: italic;text-decoration: underline;" />
+						</center>
+					</p:column>
+					<f:facet name="footer">
+						<p:commandButton oncomplete="PF('wdvDialogChooseFood').show();"
+							action="#{dangKyComBean.ajaxHandleChonMonTapped()}"
+							process="@this" value="Đặt món ăn (theo ca)" styleClass="btsave"
+							style="text-decoration: underline" update=":formChooseFood" />
+					</f:facet>
+				</p:dataTable>
+			</h:form>
+		</p:dialog>
+		<!-- DIALOG HANDLE CHON MON AN -->
+		<p:dialog widgetVar="wdvDialogChooseFood" width="800" height="600"
+			resizable="false" closeOnEscape="true" header="Chọn món ăn"
+			id="idDialogChooseFood">
+			<h:form id="formChooseFood">
+				<center>
+					<h:outputText value="Chọn ca: "
+						style="font-weight:bold;margin-right:5px" />
+					<p:selectOneMenu value="#{dangKyComBean.shiftsSelected}"
+						converter="abstractConverter" effect="fade" var="t" id="kdgtc"
+						style="width:150px;" filter="true" filterMatchMode="custom"
+						filterFunction="customFilter">
+						<p:ajax process="@this"
+							listener="#{dangKyComBean.ajaxHandleShowFoodByShifts()}"
+							update=":formChooseFood:dtFoodShifts1,:formChooseFood:kdgtc" />
+						<f:selectItems value="#{dangKyComBean.allShift}" var="loop"
+							itemLabel="#{loop.name}" itemValue="#{loop}" />
+						<p:column>
+							<h:outputText value="#{t.name}" />
+						</p:column>
+					</p:selectOneMenu>
+				</center>
+				<br />
+				<p:dataTable var="item" value="#{dangKyComBean.foodsShifts}"
 					selectionMode="single" selection="#{dangKyComBean.food1Selected}"
-					rowKey="#{item.id}" id="dtFoodShifts1" scrollHeight="370">
+					rowKey="#{item.id}" id="dtFoodShifts1" scrollHeight="370"
+					style="height:500px;margin-top:20px">
 					<p:ajax event="rowSelect" process="@this"></p:ajax>
-					<p:column headerText="Tên món ăn ca 1" width="15px"
+					<p:column headerText="Tên món ăn" width="15px"
 						style="text-align:center">
 						<h:outputText value="#{item.category_food.name}" />
 					</p:column>
@@ -189,64 +230,11 @@
 					</p:column>
 					<f:facet name="footer">
 						<p:commandButton
-							action="#{dangKyComBean.createOrUpdateFoodShifts1}"
-							oncomplete="PF('dialogFoodShifts1').hide();" process="@this"
+							action="#{dangKyComBean.createOrUpdateFoodShifts}"
+							oncomplete="PF('wdvDialogChooseFood').hide();" process="@this"
 							value="Cập nhật" styleClass="btsave"
-							style="text-decoration: underline" update=":detail:dtOrderFood" />
-					</f:facet>
-				</p:dataTable>
-			</h:form>
-		</p:dialog>
-		<p:dialog widgetVar="dialogFoodShifts2" width="800" resizable="false"
-			closeOnEscape="true" header="Chọn món ca 2" id="idDialogFoodShifts2">
-			<h:form>
-				<p:dataTable var="item" value="#{dangKyComBean.foodsShifts2}"
-					selectionMode="single" selection="#{dangKyComBean.food2Selected}"
-					rowKey="#{item.id}" id="dtFoodShifts2">
-					<p:ajax event="rowSelect" process="@this"></p:ajax>
-					<p:column headerText="Tên món ăn ca 2" width="15px"
-						style="text-align:center">
-						<h:outputText value="#{item.category_food.name}" />
-					</p:column>
-					<p:column headerText="Hình ảnh" width="15px"
-						style="text-align:center">
-						<img
-							src="data:image/jpg;base64, #{item.category_food.imageString()}"
-							style="max-width: 90px; max-height: 90px; object-fit: contain;" />
-					</p:column>
-					<f:facet name="footer">
-						<p:commandButton
-							action="#{dangKyComBean.createOrUpdateFoodShifts2}"
-							oncomplete="PF('dialogFoodShifts2').hide();" process="@this"
-							value="Cập nhật" styleClass="btsave"
-							style="text-decoration: underline" update=":detail:dtOrderFood" />
-					</f:facet>
-				</p:dataTable>
-			</h:form>
-		</p:dialog>
-		<p:dialog widgetVar="dialogFoodShifts3" width="800" resizable="false"
-			closeOnEscape="true" header="Chọn món ca 3" id="idDialogFoodShifts3">
-			<h:form>
-				<p:dataTable var="item" value="#{dangKyComBean.foodsShifts3}"
-					selectionMode="single" selection="#{dangKyComBean.food3Selected}"
-					rowKey="#{item.id}" id="dtFoodShifts3">
-					<p:ajax event="rowSelect" process="@this"></p:ajax>
-					<p:column headerText="Tên món ăn ca 3" width="15px"
-						style="text-align:center">
-						<h:outputText value="#{item.category_food.name}" />
-					</p:column>
-					<p:column headerText="Hình ảnh" width="15px"
-						style="text-align:center">
-						<img
-							src="data:image/jpg;base64, #{item.category_food.imageString()}"
-							style="max-width: 90px; max-height: 90px; object-fit: contain;" />
-					</p:column>
-					<f:facet name="footer">
-						<p:commandButton
-							action="#{dangKyComBean.createOrUpdateFoodShifts3}"
-							oncomplete="PF('dialogFoodShifts3').hide();" process="@this"
-							value="Cập nhật" styleClass="btsave"
-							style="text-decoration: underline" update=":detail:dtOrderFood" />
+							style="text-decoration: underline"
+							update=":detail:dtOrderFood,:formDetail:dtFoodShifts1" />
 					</f:facet>
 				</p:dataTable>
 			</h:form>

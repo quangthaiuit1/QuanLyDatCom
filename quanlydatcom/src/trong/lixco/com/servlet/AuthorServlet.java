@@ -52,9 +52,11 @@ public class AuthorServlet extends HttpServlet {
 						// trinh hay khong
 						// Neu cho phep thi cai dat bo quyen cho cho user
 						boolean allow = authorizationManager.isAllowed(account);
+						session.setAttribute("account", account);
 						if (allow) {
-							session.setAttribute("account", account);
 							response.sendRedirect(pathlocal + "/quanlydatcom/pages/home.htm");
+						} else {
+							response.sendRedirect(pathlocal + "/quanlydatcom/pages/dangkycom.htm");
 						}
 					}
 				} else {
@@ -87,7 +89,7 @@ public class AuthorServlet extends HttpServlet {
 			pathlocal = accdblocal.getAddressPublic();
 		}
 		StaticPath.setPathLocal(pathlocal);
-		
+
 		AccountDatabase accdbcenter = accountDatabaseService.findByName(NameSytem.NAMEMAIN);
 		if (check) {
 			pathcenter = accdbcenter.getAddress();
@@ -118,13 +120,14 @@ public class AuthorServlet extends HttpServlet {
 	}
 
 	@Override
-	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+	protected void doGet(HttpServletRequest request, HttpServletResponse response)
+			throws ServletException, IOException {
 		processRequestPost(request, response);
 	}
 
 	@Override
-	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException,
-			IOException {
+	protected void doPost(HttpServletRequest request, HttpServletResponse response)
+			throws ServletException, IOException {
 		processRequestPost(request, response);
 	}
 

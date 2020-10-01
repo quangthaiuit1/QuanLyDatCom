@@ -137,16 +137,29 @@ public class CaiDatDanhMucBean extends AbstractBean<CategoryFood> {
 		try {
 			// check co trung ten hay khong
 			List<CategoryFood> checkExistName = CATEGORY_FOOD_SERVICE.findByName(cFoodUpdate.getName());
-			if (checkExistName.isEmpty()) {
-				CategoryFood cfUpdate = CATEGORY_FOOD_SERVICE.update(cFoodUpdate);
-				if (cfUpdate != null) {
-					Notification.NOTI_SUCCESS("Thành công");
-					categoryFoods = CATEGORY_FOOD_SERVICE.findAll();
-					cFoodUpdate = new CategoryFood();
-					PrimeFaces current = PrimeFaces.current();
-					current.executeScript("PF('widgetCapNhatMonAn').hide();");
+			boolean isExist = false;
+			if (checkExistName.size() < 2) {
+				if (checkExistName.size() == 1) {
+					if (checkExistName.get(0).getId() != cFoodUpdate.getId()) {
+						isExist = true;
+					}
+				}
+				// ten chua co
+				if (!isExist) {
+					// truong hop khong co phan tu nao trung -> cap nhat ten
+					CategoryFood cfUpdate = CATEGORY_FOOD_SERVICE.update(cFoodUpdate);
+					if (cfUpdate != null) {
+						Notification.NOTI_SUCCESS("Thành công");
+						categoryFoods = CATEGORY_FOOD_SERVICE.findAll();
+						cFoodUpdate = new CategoryFood();
+						PrimeFaces current = PrimeFaces.current();
+						current.executeScript("PF('widgetCapNhatMonAn').hide();");
+					} else {
+						Notification.NOTI_ERROR("Thất bại");
+					}
 				} else {
-					Notification.NOTI_ERROR("Thất bại");
+					categoryFoods = CATEGORY_FOOD_SERVICE.findAll();
+					Notification.NOTI_ERROR("Tên món ăn đã tồn tại");
 				}
 			} else {
 				categoryFoods = CATEGORY_FOOD_SERVICE.findAll();

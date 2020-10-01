@@ -1,19 +1,30 @@
 package trong.lixco.com.bean;
 
+import java.io.OutputStream;
 import java.rmi.RemoteException;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.ejb.EJB;
 import javax.faces.bean.ViewScoped;
+import javax.faces.context.FacesContext;
 import javax.inject.Inject;
 
 import org.jboss.logging.Logger;
 import org.joda.time.LocalDate;
+import org.primefaces.PrimeFaces;
 
+import net.sf.jasperreports.engine.JRDataSource;
+import net.sf.jasperreports.engine.JasperExportManager;
+import net.sf.jasperreports.engine.JasperFillManager;
+import net.sf.jasperreports.engine.JasperPrint;
+import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
 import trong.lixco.com.account.servicepublics.Account;
 import trong.lixco.com.account.servicepublics.Department;
 import trong.lixco.com.account.servicepublics.DepartmentServicePublic;
@@ -26,14 +37,17 @@ import trong.lixco.com.bean.staticentity.ShiftsUtil;
 import trong.lixco.com.ejb.service.FoodDayByDayService;
 import trong.lixco.com.ejb.service.OrderAndFoodByDateService;
 import trong.lixco.com.ejb.service.OrderFoodService;
+import trong.lixco.com.ejb.service.ShiftsService;
 import trong.lixco.com.jpa.entity.FoodByDay;
 import trong.lixco.com.jpa.entity.OrderAndFoodByDate;
 import trong.lixco.com.jpa.entity.OrderFood;
+import trong.lixco.com.jpa.entity.Shifts;
 import trong.lixco.com.servicepublic.EmployeeDTO;
 import trong.lixco.com.servicepublic.EmployeeServicePublic;
 import trong.lixco.com.servicepublic.EmployeeServicePublicProxy;
 import trong.lixco.com.util.DepartmentUtil;
 import trong.lixco.com.util.Notify;
+import trong.lixco.util.DateUtil;
 
 @javax.faces.bean.ManagedBean
 @ViewScoped
@@ -77,14 +91,16 @@ public class DangKyComBean extends AbstractBean<OrderFood> {
 
 	// list du lieu de load len bang dang ky
 	private List<OrderFood> orderFoods;
-	private List<FoodByDay> foodsShifts1;
+	private List<FoodByDay> foodsShifts;
 	private List<FoodByDay> foodsShifts2;
 	private List<FoodByDay> foodsShifts3;
-	
 
 	private FoodByDay food1Selected;
 	private FoodByDay food2Selected;
 	private FoodByDay food3Selected;
+
+	// chi de hien ngay tren moi dialog
+	private Date dateItemSelected;
 
 	@EJB
 	private OrderFoodService ORDER_FOOD_SERVICE;
@@ -92,9 +108,12 @@ public class DangKyComBean extends AbstractBean<OrderFood> {
 	@EJB
 	private FoodDayByDayService FOOD_BY_DAY_SERVICE;
 
-	@EJB 
-	private OrderAndFoodByDateService ORDER_AND_FOOD_BY_DATE_SERVICE; 
-	
+	@EJB
+	private OrderAndFoodByDateService ORDER_AND_FOOD_BY_DATE_SERVICE;
+
+	@EJB
+	private ShiftsService SHIFTS_SERVICE;
+
 	EmployeeServicePublic EMPLOYEE_SERVICE_PUBLIC;
 
 	private Date startDate;
@@ -102,6 +121,10 @@ public class DangKyComBean extends AbstractBean<OrderFood> {
 	private int week;
 	private int yearOfWeek;
 	private List<OrderAndFoodByDate> ofsByDate;
+	private OrderFood orderfoodSelected;
+	private List<Shifts> allShift;
+	private Shifts shiftsSelected;
+
 	public void ajax_setDate() {
 		LocalDate lc = new LocalDate();
 		startDate = lc.withWeekOfWeekyear(week).withYear(yearOfWeek).dayOfWeek().withMinimumValue().toDate();
@@ -110,10 +133,11 @@ public class DangKyComBean extends AbstractBean<OrderFood> {
 
 	@Override
 	public void initItem() {
-		ofsByDate = ORDER_AND_FOOD_BY_DATE_SERVICE.findAll();
-//		food1Selected = new FoodDayByDay();
-//		food2Selected = new FoodDayByDay();
-//		food3Selected = new FoodDayByDay();
+		// gan ca 1 neu khong chon gi
+		shiftsSelected = new Shifts();
+		orderfoodSelected = new OrderFood();
+		allShift = SHIFTS_SERVICE.findAll();
+		shiftsSelected = allShift.get(0);
 		sf = new SimpleDateFormat("dd/MM/yyyy");
 		departmentSearch = new Department();
 
@@ -153,9 +177,91 @@ public class DangKyComBean extends AbstractBean<OrderFood> {
 		LocalDate lc = new LocalDate();
 	}
 
-	public void ajaxSelectDep() {
-		// if (departmentParent != null)
-		// employees = employeeService.findByDepp(departmentParent);
+	// show report mon an tu ngay den ngay
+	public void showReportFoodPDF() {
+		try {
+			List<OrderAndFoodByDate> foods = ORDER_AND_FOOD_BY_DATE_SERVICE.findByDayToDaySortByDateAndShifts(startDate,
+					endDate, member.getCode());
+			if (!foods.isEmpty()) {
+				// report
+				String reportPath = FacesContext.getCurrentInstance().getExternalContext()
+						.getRealPath("/resources/reports/bcdubaosuatannhanvien.jasper");
+				// check neu list rong~
+				if (!foods.isEmpty()) {
+					JRDataSource beanDataSource = new JRBeanCollectionDataSource(foods);
+					Map<String, Object> importParam = new HashMap<String, Object>();
+					String image = FacesContext.getCurrentInstance().getExternalContext()
+							.getRealPath("/resources/gfx/lixco_logo.png");
+					importParam.put("logo", image);
+					importParam.put("employeeName", member.getName());
+					JasperPrint jasperPrint = JasperFillManager.fillReport(reportPath, importParam, beanDataSource);
+					FacesContext facesContext = FacesContext.getCurrentInstance();
+					OutputStream outputStream;
+					outputStream = facesContext.getExternalContext().getResponseOutputStream();
+					JasperExportManager.exportReportToPdfStream(jasperPrint, outputStream);
+					facesContext.responseComplete();
+				} else {
+					Notification.NOTI_ERROR("Không có dữ liệu");
+				}
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
+	// xoa mon an
+	public void deleteOrderFood(OrderAndFoodByDate itemSelected) {
+		// kiem tra xem item duoc xoa -> ngay co nho hon hoac bang ngay hien tai khong
+		if (itemSelected.getOrder_food().getRegistration_date().after(new Date())) {
+			boolean checkDeleted = ORDER_AND_FOOD_BY_DATE_SERVICE.delete(itemSelected);
+			if (checkDeleted) {
+				java.sql.Date abc = new java.sql.Date(itemSelected.getOrder_food().getRegistration_date().getTime());
+				ofsByDate = ORDER_AND_FOOD_BY_DATE_SERVICE.findByDate(abc, member.getCode());
+				Notification.NOTI_SUCCESS("Xóa thành công");
+				return;
+			} else {
+				Notification.NOTI_ERROR("Lỗi");
+				return;
+			}
+		}
+		if (itemSelected.getOrder_food().getRegistration_date().before(new Date())) {
+			Notification.NOTI_ERROR("Không được xóa");
+			return;
+		}
+
+	}
+
+	// xu ly load data chi tiet dang ky mon an theo ngay
+	public void handleDataDialogDetail(OrderFood itemSelected) {
+		// set ngay item duoc chon
+		dateItemSelected = itemSelected.getRegistration_date();
+		orderfoodSelected = itemSelected;
+		// convert sql date
+		java.sql.Date abc = new java.sql.Date(itemSelected.getRegistration_date().getTime());
+		ofsByDate = ORDER_AND_FOOD_BY_DATE_SERVICE.findByDate(abc, member.getCode());
+		PrimeFaces current = PrimeFaces.current();
+		current.executeScript("PF('wdvDialogShowDetail').show();");
+	}
+
+	public void ajaxHandleShowFoodByShifts() {
+		try {
+			// kiem tra co phai nhan vien di ca hay khong
+			EmployeeDTO employee = EMPLOYEE_SERVICE_PUBLIC.findByCode(member.getCode());
+			if (!employee.isWorkShift() && shiftsSelected.getId() == ShiftsUtil.SHIFTS3_ID) {
+				PrimeFaces current = PrimeFaces.current();
+				current.executeScript("PF('wdvDialogChooseFood').hide();");
+				Notification.NOTI_ERROR("Không được đăng ký");
+				return;
+			}
+			java.sql.Date date = new java.sql.Date(orderfoodSelected.getRegistration_date().getTime());
+			List<OrderAndFoodByDate> orderAndFoods = ORDER_AND_FOOD_BY_DATE_SERVICE.find(date, shiftsSelected.getId(),
+					member.getCode());
+			if (!orderAndFoods.isEmpty()) {
+				food1Selected = orderAndFoods.get(0).getFood_by_day();
+			}
+			showListFoodShift(shiftsSelected.getId());
+		} catch (Exception e) {
+		}
 	}
 
 	public Department findDeplevel2(Department department) {
@@ -169,13 +275,18 @@ public class DangKyComBean extends AbstractBean<OrderFood> {
 	boolean manager = false;
 	private Account account;
 
-	public void ajaxdepartmentSearch() {
-		// if (departmentParentSearch != null) {
-		// departmentSearchs =
-		// departmentService.findDepartment(departmentParentSearch);
-		// departmentSearch = null;
-		//
-		// }
+	public void ajaxHandleChonMonTapped() {
+		shiftsSelected = allShift.get(0);
+		// convert sql date
+		java.sql.Date date = new java.sql.Date(orderfoodSelected.getRegistration_date().getTime());
+		List<OrderAndFoodByDate> orderAndFoods = ORDER_AND_FOOD_BY_DATE_SERVICE.find(date, shiftsSelected.getId(),
+				member.getCode());
+		if (!orderAndFoods.isEmpty()) {
+			food1Selected = orderAndFoods.get(0).getFood_by_day();
+		}
+		// Hien thi list mon an luc chua chon gi ca
+		showListFoodShift(shiftsSelected.getId());
+
 	}
 
 	public void findData() {
@@ -257,38 +368,38 @@ public class DangKyComBean extends AbstractBean<OrderFood> {
 	}
 
 	// show food ca 1
-	public void showListFoodShift1(OrderFood orderFood) {
-		java.sql.Date abc = new java.sql.Date(orderFood.getRegistration_date().getTime());
-		foodsShifts1 = FOOD_BY_DAY_SERVICE.findByDate(abc, ShiftsUtil.SHIFTS1_ID);
+	public void showListFoodShift(long shiftId) {
+		java.sql.Date abc = new java.sql.Date(orderfoodSelected.getRegistration_date().getTime());
+		foodsShifts = FOOD_BY_DAY_SERVICE.findByDate(abc, shiftId);
 
-	}
-
-	public void showListFoodShift2(OrderFood orderFood) {
-		java.sql.Date abc = new java.sql.Date(orderFood.getRegistration_date().getTime());
-		foodsShifts2 = FOOD_BY_DAY_SERVICE.findByDate(abc, ShiftsUtil.SHIFTS2_ID);
-	}
-
-	public void showListFoodShift3(OrderFood orderFood) {
-		java.sql.Date abc = new java.sql.Date(orderFood.getRegistration_date().getTime());
-		foodsShifts3 = FOOD_BY_DAY_SERVICE.findByDate(abc, ShiftsUtil.SHIFTS3_ID);
 	}
 
 	// ktra co phai ngay hien tai hay khong
-	public boolean isDateCurrent(FoodByDay dateCheck) {
+	public boolean isDateCurrent(FoodByDay dateCheck) throws ParseException {
 		Date dateCurrent = new Date();
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
-		return sdf.format(dateCurrent).equals(sdf.format(dateCheck.getFood_date()));
+		// neu la ngay hien tai
+		if (sdf.format(dateCurrent).equals(sdf.format(dateCheck.getFood_date()))) {
+			return true;
+		}
+		// 3h ngay hom truoc
+		Date dateTomorrow = DateUtil.add(dateCurrent, 1);
+		// neu ngay check == ngay mai va 3h ngay hien tai
+		if (sdf.format(dateTomorrow).equals(sdf.format(dateCheck.getFood_date()))) {
+			// kiem tra gio hien tai so voi 15h
+			return trong.lixco.com.bean.staticentity.DateUtil.compareHHMM(dateCurrent, "15:00");
+		}
+		return false;
 	}
 
 	// ktra het han chua
 	public boolean isExpired(FoodByDay dateCheck) {
 		Date dateCurrent = new Date();
-		SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
 		return dateCheck.getFood_date().before(dateCurrent);
 	}
 
 	// Cap nhat food theo ca cho user
-	public void createOrUpdateFoodShifts1() {
+	public void createOrUpdateFoodShifts() {
 		// ca duoc chon khong co mon nao
 		if (food1Selected == null) {
 			Notification.NOTI_WARN("Vui lòng chọn món");
@@ -297,9 +408,14 @@ public class DangKyComBean extends AbstractBean<OrderFood> {
 		if (food1Selected != null) {
 			// dieu kien khong duoc dang ky mon cua ngay hom nay
 			// ktra co phai ngay hien tai khong?
-			boolean isCurrent = isDateCurrent(food1Selected);
+
+			boolean isCurrent = false;
+			try {
+				isCurrent = isDateCurrent(food1Selected);
+			} catch (Exception e) {
+			}
 			if (isCurrent) {
-				Notification.NOTI_WARN("Vui lòng đăng ký trước 1 ngày");
+				Notification.NOTI_WARN("Vui lòng đăng ký trước 15h ngày hôm trước");
 				return;
 			}
 			if (!isCurrent) {
@@ -317,134 +433,80 @@ public class DangKyComBean extends AbstractBean<OrderFood> {
 					} catch (RemoteException e) {
 						e.printStackTrace();
 					}
-					if (temp.getEmployeeName() == null && employee.getName() != null) {
+					if (employee.getName() != null) {
 						OrderFood ofSave = new OrderFood();
-						ofSave.setFood_by_date_shifts1(food1Selected);
 						ofSave.setRegistration_date(food1Selected.getFood_date());
 						ofSave.setEmployeeName(member.getName());
 						ofSave.setEmployeeCode(member.getCode());
 						ofSave.setDepartment_code(member.getDepartment().getCode());
 						ofSave.setDepartment_name(member.getDepartment().getName());
 						ofSave.setEmployee_id(employee.getCodeOld());
-						OrderFood resultCreate = ORDER_FOOD_SERVICE.create(ofSave);
-						if (resultCreate != null) {
-							orderFoods = ORDER_FOOD_SERVICE.findByDayToDay(startDate, endDate, member.getCode());
-							resetData(orderFoods);
-						}
-					} else {
-						temp.setFood_by_date_shifts1(food1Selected);
-						OrderFood resultUpdate = ORDER_FOOD_SERVICE.update(temp);
-						if (resultUpdate != null) {
-							orderFoods = ORDER_FOOD_SERVICE.findByDayToDay(startDate, endDate, member.getCode());
-							resetData(orderFoods);
-						}
-					}
-				}
-			}
-		}
-	}
-
-	public void createOrUpdateFoodShifts2() {
-		// ca chon khong co mon
-		if (food2Selected == null) {
-			Notification.NOTI_WARN("Vui lòng chọn món");
-			return;
-		}
-		if (food2Selected != null) {
-			// kiem tra co phai ngay hien tai khong
-			boolean isCurrent = isDateCurrent(food2Selected);
-			if (isCurrent) {
-				Notification.NOTI_WARN("Vui lòng đăng ký trước 1 ngày");
-				return;
-			}
-			if (!isCurrent) {
-				boolean isExpired = isExpired(food2Selected);
-				if (isExpired) {
-					Notification.NOTI_WARN("Hết hạn đăng ký món ăn");
-					return;
-				}
-				if (!isExpired) {
-					OrderFood temp = ORDER_FOOD_SERVICE.findByDateAndEmployeeCode(food2Selected.getFood_date(),
-							member.getCode());
-					if (temp == null) {
-						OrderFood ofSave = new OrderFood();
-						ofSave.setFood_by_date_shifts2(food2Selected);
-						ofSave.setRegistration_date(food2Selected.getFood_date());
-						ofSave.setEmployeeName(member.getName());
-						ofSave.setEmployeeCode(member.getCode());
-						OrderFood resultCreate = ORDER_FOOD_SERVICE.create(ofSave);
-						if (resultCreate != null) {
-							orderFoods = ORDER_FOOD_SERVICE.findByDayToDay(startDate, endDate, member.getCode());
-							resetData(orderFoods);
-						}
-					} else {
-						temp.setFood_by_date_shifts2(food2Selected);
-						OrderFood resultUpdate = ORDER_FOOD_SERVICE.update(temp);
-						if (resultUpdate != null) {
-							orderFoods = ORDER_FOOD_SERVICE.findByDayToDay(startDate, endDate, member.getCode());
-							resetData(orderFoods);
-						}
-					}
-				}
-			}
-		}
-	}
-
-	public void createOrUpdateFoodShifts3() {
-		// ca chon khong co mon
-		if (food3Selected == null) {
-			Notification.NOTI_WARN("Vui lòng chọn món");
-			return;
-		}
-		if (food3Selected != null) {
-			try {
-				EmployeeDTO employee = EMPLOYEE_SERVICE_PUBLIC.findByCode(member.getCode());
-				//neu lam viec theo ca moi duoc chon ca 3
-				if (employee.isWorkShift()) {
-					// kiem tra co phai ngay hien tai khong
-					boolean isCurrent = isDateCurrent(food3Selected);
-					if (isCurrent) {
-						Notification.NOTI_WARN("Vui lòng đăng ký trước 1 ngày");
-						return;
-					}
-					if (!isCurrent) {
-						boolean isExpired = isExpired(food2Selected);
-						if (isExpired) {
-							Notification.NOTI_WARN("Hết hạn đăng ký món ăn");
-							return;
-						}
-						if (!isExpired) {
-							OrderFood temp = ORDER_FOOD_SERVICE.findByDateAndEmployeeCode(food3Selected.getFood_date(),
-									member.getCode());
-							if (temp == null) {
-								OrderFood ofSave = new OrderFood();
-								ofSave.setFood_by_date_shifts3(food3Selected);
-								ofSave.setRegistration_date(food3Selected.getFood_date());
-								ofSave.setEmployeeName(member.getName());
-								ofSave.setEmployeeCode(member.getCode());
-								OrderFood resultCreate = ORDER_FOOD_SERVICE.create(ofSave);
-								if (resultCreate != null) {
-									orderFoods = ORDER_FOOD_SERVICE.findByDayToDay(startDate, endDate,
-											member.getCode());
-									resetData(orderFoods);
+						// kiem tra co chua
+						if (temp.getId() != null) {
+							OrderAndFoodByDate addNew = new OrderAndFoodByDate();
+							addNew.setOrder_food(temp);
+							addNew.setFood_by_day(food1Selected);
+							List<OrderAndFoodByDate> checkExist = ORDER_AND_FOOD_BY_DATE_SERVICE
+									.findByShiftsId(temp.getId(), food1Selected.getShifts().getId());
+							// neu chua co
+							if (checkExist.isEmpty()) {
+								// them moi
+								OrderAndFoodByDate addNewChecked = ORDER_AND_FOOD_BY_DATE_SERVICE.create(addNew);
+								if (addNewChecked != null) {
+									// convert sql date
+									java.sql.Date abc = new java.sql.Date(
+											orderfoodSelected.getRegistration_date().getTime());
+									// cap nhat lai list moi -> phan tu vua them
+									ofsByDate = ORDER_AND_FOOD_BY_DATE_SERVICE.findByDate(abc, member.getCode());
+									Notification.NOTI_SUCCESS("Thành công");
+									return;
+								} else {
+									java.sql.Date abc = new java.sql.Date(
+											orderfoodSelected.getRegistration_date().getTime());
+									// cap nhat lai list moi -> phan tu vua them
+									ofsByDate = ORDER_AND_FOOD_BY_DATE_SERVICE.findByDate(abc, member.getCode());
+									Notification.NOTI_ERROR("Không thành công");
+									return;
 								}
 							} else {
-								temp.setFood_by_date_shifts3(food3Selected);
-								OrderFood resultUpdate = ORDER_FOOD_SERVICE.update(temp);
-								if (resultUpdate != null) {
-									orderFoods = ORDER_FOOD_SERVICE.findByDayToDay(startDate, endDate,
-											member.getCode());
-									resetData(orderFoods);
+								// query phan tu can update
+								List<OrderAndFoodByDate> temps = ORDER_AND_FOOD_BY_DATE_SERVICE.findByShiftsId(
+										addNew.getOrder_food().getId(), addNew.getFood_by_day().getShifts().getId());
+								// set gia tri can update
+								temps.get(0).setFood_by_day(food1Selected);
+								OrderAndFoodByDate checkUpdate = ORDER_AND_FOOD_BY_DATE_SERVICE.update(temps.get(0));
+								if (checkUpdate != null) {
+									java.sql.Date abc = new java.sql.Date(
+											orderfoodSelected.getRegistration_date().getTime());
+									ofsByDate = ORDER_AND_FOOD_BY_DATE_SERVICE.findByDate(abc, member.getCode());
+									Notification.NOTI_SUCCESS("Thành công");
+									return;
+								} else {
+									Notification.NOTI_ERROR("Không thành công");
+									return;
 								}
 							}
 						}
+						// chua co duoi DB
+						OrderFood resultCreate = ORDER_FOOD_SERVICE.create(ofSave);
+						if (resultCreate != null) {
+							OrderAndFoodByDate addNew = new OrderAndFoodByDate();
+							addNew.setOrder_food(resultCreate);
+							addNew.setFood_by_day(food1Selected);
+							// them moi
+							OrderAndFoodByDate addNewChecked = ORDER_AND_FOOD_BY_DATE_SERVICE.create(addNew);
+							if (addNewChecked != null) {
+								PrimeFaces current = PrimeFaces.current();
+								current.executeScript("PF('wdvDialogChooseFood').hide();");
+								java.sql.Date abc = new java.sql.Date(
+										orderfoodSelected.getRegistration_date().getTime());
+								// cap nhat lai list moi -> phan tu vua them
+								ofsByDate = ORDER_AND_FOOD_BY_DATE_SERVICE.findByDate(abc, member.getCode());
+								Notification.NOTI_SUCCESS("Thành công");
+							}
+						}
 					}
-				}else {
-					//nhan vien van phong
-					Notification.NOTI_ERROR("Không được đăng ký");
 				}
-			} catch (RemoteException e) {
-				e.printStackTrace();
 			}
 		}
 	}
@@ -452,6 +514,14 @@ public class DangKyComBean extends AbstractBean<OrderFood> {
 	@Override
 	protected Logger getLogger() {
 		return logger;
+	}
+
+	public List<OrderAndFoodByDate> getOfsByDate() {
+		return ofsByDate;
+	}
+
+	public void setOfsByDate(List<OrderAndFoodByDate> ofsByDate) {
+		this.ofsByDate = ofsByDate;
 	}
 
 	public int getYearSearch() {
@@ -630,12 +700,12 @@ public class DangKyComBean extends AbstractBean<OrderFood> {
 		this.firstDayInMonthByWeekCurrent = firstDayInMonthByWeekCurrent;
 	}
 
-	public List<FoodByDay> getFoodsShifts1() {
-		return foodsShifts1;
+	public List<FoodByDay> getFoodsShifts() {
+		return foodsShifts;
 	}
 
-	public void setFoodsShifts1(List<FoodByDay> foodsShifts1) {
-		this.foodsShifts1 = foodsShifts1;
+	public void setFoodsShifts(List<FoodByDay> foodsShifts) {
+		this.foodsShifts = foodsShifts;
 	}
 
 	public List<FoodByDay> getFoodsShifts2() {
@@ -710,4 +780,27 @@ public class DangKyComBean extends AbstractBean<OrderFood> {
 		this.yearOfWeek = yearOfWeek;
 	}
 
+	public List<Shifts> getAllShift() {
+		return allShift;
+	}
+
+	public void setAllShift(List<Shifts> allShift) {
+		this.allShift = allShift;
+	}
+
+	public Shifts getShiftsSelected() {
+		return shiftsSelected;
+	}
+
+	public void setShiftsSelected(Shifts shiftsSelected) {
+		this.shiftsSelected = shiftsSelected;
+	}
+
+	public Date getDateItemSelected() {
+		return dateItemSelected;
+	}
+
+	public void setDateItemSelected(Date dateItemSelected) {
+		this.dateItemSelected = dateItemSelected;
+	}
 }

@@ -82,11 +82,20 @@
 						value="#{baoCaoBean.valueChecked}"
 						style="width:60%;text-align:center;margin-top:6px;margin-left:20%">
 						<f:selectItem itemLabel="Chọn loại báo cáo" itemValue="" />
-						<f:selectItem itemLabel="BC Chi tiết dự báo suất ăn" itemValue="1" />
+						<f:selectItem itemLabel="BC chi tiết dự báo suất ăn" itemValue="1" />
 						<f:selectItem itemLabel="BC tổng hợp dự báo suất ăn" itemValue="2" />
-						<f:selectItem
-							itemLabel="Báo cáo chi tiết suất ăn toàn thể CB-CNV theo ngày"
+						<f:selectItem itemLabel="BC chi tiết suất ăn (Đã ăn)"
 							itemValue="3" />
+						<f:selectItem itemLabel="BC tổng hợp suất ăn (Đã ăn)"
+							itemValue="4" />
+						<f:selectItem
+							itemLabel="BC chi tiết suất ăn toàn thể CB-CNV theo ngày"
+							itemValue="5" />
+						<f:selectItem itemLabel="BC số liệu suất ăn chính xác (theo ngày)"
+							itemValue="6" />
+						<f:selectItem
+							itemLabel="Báo cáo tổng hợp chênh lệch suất ăn chính xác và thực tế"
+							itemValue="7" />
 						<p:ajax listener="#{baoCaoBean.handleRenderView()}"
 							process="@this" />
 					</p:selectOneMenu>
@@ -125,13 +134,10 @@
 						<p:fieldset
 							style=" width:80%;margin-left:4%;height:50px;margin-top:10px"
 							styleClass="noneformatfs">
-							<p:commandButton value="Xuất excel" styleClass="btsave"
-								style="float:right;margin-top:10px" ajax="false"
-								id="btnXuatExcel1"
-								actionListener="#{baoCaoBean.baoCaoTheoNgayExcel()}" />
 							<p:commandButton style="float:right;margin-top:10px"
 								styleClass="btsearch" type="submit" value="Xuất PDF"
-								ajax="false" actionListener="#{baoCaoBean.duBaoSuatAnPDF()}"
+								ajax="false"
+								actionListener="#{baoCaoBean.chiTietDuBaoSuatAnPDF()}"
 								onclick="this.form.target='_blank'" />
 						</p:fieldset>
 					</div>
@@ -174,16 +180,104 @@
 							<p:commandButton value="Xuất excel" styleClass="btsave"
 								style="float:right;margin-top:10px" ajax="false"
 								id="btnXuatExcelDetail"
-								actionListener="#{baoCaoBean.baoCaoChiTietExcel()}" />
+								actionListener="#{baoCaoBean.bcTongHopDuBaoSuatAnExcel()}" />
 							<p:commandButton style="float:right;margin-top:10px"
 								styleClass="btsearch" type="submit" value="Xuất PDF"
-								ajax="false" actionListener="#{baoCaoBean.baoCaoChiTietPDF()}"
+								ajax="false"
+								actionListener="#{baoCaoBean.baoCaoTongHopDuBaoSuatAnPDF()}"
 								onclick="this.form.target='_blank'" />
 						</p:fieldset>
 					</div>
 				</div>
 			</p:fieldset>
+			<!-- BC KET QUA SUAT AN -->
 			<p:fieldset rendered="#{baoCaoBean.checkedRenderView[2]}">
+				<div class="
+				ui-g" style="width: 100%">
+					<h3>Báo cáo chi tiết suất ăn(Đã ăn)</h3>
+				</div>
+				<div class="ui-g">
+					<p:separator style="width:100%;float:left" />
+				</div>
+				<div class="ui-g-9" style="margin-left: 10%">
+					<div class="ui-g-3">
+						<p:fieldset id="fieldsetFromDateAteDetail" legend="Từ ngày:"
+							styleClass="noneformatfs" style=" height:60px">
+							<p:calendar styleClass="stwidth" locale="vi"
+								value="#{baoCaoBean.fromDateAte}"
+								id="dateSearchFromDateAteDetail"
+								pattern="#{applicationBean.cf.formatDate}"
+								showButtonPanel="true" navigator="true"
+								mask="#{applicationBean.cf.maskDate}" />
+						</p:fieldset>
+					</div>
+					<div class="ui-g-3">
+						<p:fieldset id="fieldsetToDateAteDetail" legend="Đến ngày:"
+							styleClass="noneformatfs" style=" height:60px">
+							<p:calendar styleClass="stwidth" locale="vi"
+								value="#{baoCaoBean.toDateAte}" id="dateSearchToDateAteDetail"
+								pattern="#{applicationBean.cf.formatDate}"
+								showButtonPanel="true" navigator="true"
+								mask="#{applicationBean.cf.maskDate}" />
+						</p:fieldset>
+					</div>
+					<div class="ui-g-6">
+						<p:fieldset
+							style=" width:80%;margin-left:4%;height:50px;margin-top:10px"
+							styleClass="noneformatfs">
+							<p:commandButton style="float:right;margin-top:10px"
+								styleClass="btsearch" type="submit" value="Xuất PDF"
+								ajax="false"
+								actionListener="#{baoCaoBean.baoCaoChiTietKetQuaPDF()}"
+								onclick="this.form.target='_blank'" />
+						</p:fieldset>
+					</div>
+				</div>
+			</p:fieldset>
+			<p:fieldset rendered="#{baoCaoBean.checkedRenderView[3]}">
+				<div class="
+				ui-g" style="width: 100%">
+					<h3>Báo cáo tổng hợp suất ăn(Đã ăn)</h3>
+				</div>
+				<div class="ui-g">
+					<p:separator style="width:100%;float:left" />
+				</div>
+				<div class="ui-g-9" style="margin-left: 10%">
+					<div class="ui-g-3">
+						<p:fieldset id="fieldsetFromDateAte" legend="Từ ngày:"
+							styleClass="noneformatfs" style=" height:60px">
+							<p:calendar styleClass="stwidth" locale="vi"
+								value="#{baoCaoBean.fromDateAte}" id="dateSearchFromDateAte"
+								pattern="#{applicationBean.cf.formatDate}"
+								showButtonPanel="true" navigator="true"
+								mask="#{applicationBean.cf.maskDate}" />
+						</p:fieldset>
+					</div>
+					<div class="ui-g-3">
+						<p:fieldset id="fieldsetToDateAte" legend="Đến ngày:"
+							styleClass="noneformatfs" style=" height:60px">
+							<p:calendar styleClass="stwidth" locale="vi"
+								value="#{baoCaoBean.toDateAte}" id="dateSearchToDateAte"
+								pattern="#{applicationBean.cf.formatDate}"
+								showButtonPanel="true" navigator="true"
+								mask="#{applicationBean.cf.maskDate}" />
+						</p:fieldset>
+					</div>
+					<div class="ui-g-6">
+						<p:fieldset
+							style=" width:80%;margin-left:4%;height:50px;margin-top:10px"
+							styleClass="noneformatfs">
+							<p:commandButton style="float:right;margin-top:10px"
+								styleClass="btsearch" type="submit" value="Xuất PDF"
+								ajax="false"
+								actionListener="#{baoCaoBean.baoCaoTongHopKetQuaPDF()}"
+								onclick="this.form.target='_blank'" />
+						</p:fieldset>
+					</div>
+				</div>
+			</p:fieldset>
+			<!-- END -->
+			<p:fieldset rendered="#{baoCaoBean.checkedRenderView[4]}">
 				<div class="ui-g">
 					<h3>Báo cáo suất ăn toàn thể CB-CNV(theo ngày)</h3>
 
@@ -229,6 +323,248 @@
 					</div>
 				</div>
 			</p:fieldset>
+			<!-- SO LIEU CHINH XAC -->
+			<p:fieldset rendered="#{baoCaoBean.checkedRenderView[5]}"
+				style="height: 630px">
+				<div class="ui-g">
+					<h3>Báo cáo số liệu chính xác suất ăn(theo ngày)</h3>
+				</div>
+				<div class="ui-g">
+					<p:separator style="width:100%;float:left" />
+				</div>
+				<div class="ui-g-9" style="margin-left: 17%">
+					<div class="ui-g">
+						<div class="ui-g-3">
+							<p:fieldset id="fieldsetExactly" legend="Chọn ngày:"
+								styleClass="noneformatfs" style=" height:60px">
+								<p:calendar styleClass="stwidth" locale="vi"
+									value="#{baoCaoBean.dateSearchExactly}" id="dateSearchExactly"
+									pattern="#{applicationBean.cf.formatDate}"
+									showButtonPanel="true" navigator="true"
+									mask="#{applicationBean.cf.maskDate}">
+									<p:ajax event="dateSelect" process="@this"
+										update=":formBaoCao:fieldsetSoLuong"
+										listener="#{baoCaoBean.handleAjaxChooseDateExactly}" />
+								</p:calendar>
+							</p:fieldset>
+						</div>
+						<div class="ui-g-3">
+							<p:fieldset id="fieldsetShiftsExactly" legend="Chọn ca"
+								styleClass="noneformatfs" style="width:100%; height:60px">
+								<p:selectOneMenu id="console1"
+									value="#{baoCaoBean.shiftsExactly}">
+									<f:selectItem itemLabel="Toàn bộ" itemValue="" />
+									<f:selectItem itemLabel="Ca 1"
+										itemValue="#{baoCaoBean.shifts1}" />
+									<f:selectItem itemLabel="Ca 2"
+										itemValue="#{baoCaoBean.shifts2}" />
+									<f:selectItem itemLabel="Ca 3"
+										itemValue="#{baoCaoBean.shifts3}" />
+									<f:facet name="footer">
+										<p:separator />
+										<h:outputText value="3 consoles" style="font-weight:bold;" />
+									</f:facet>
+									<p:ajax listener="#{baoCaoBean.handleAjaxChooseShifts()}"
+										process="@this" update=":formBaoCao:fieldsetSoLuong" />
+								</p:selectOneMenu>
+							</p:fieldset>
+						</div>
+						<div class="ui-g-6">
+							<p:fieldset
+								style=" width:80%;margin-left:4%;height:50px;margin-top:10px"
+								styleClass="noneformatfs">
+								<p:commandButton style="float:right;margin-top:10px"
+									styleClass="btsearch" type="submit" value="Xuất PDF"
+									ajax="false"
+									actionListener="#{baoCaoBean.baoCaoChinhXacSuatAnPDF()}"
+									onclick="this.form.target='_blank'" />
+							</p:fieldset>
+						</div>
+					</div>
+					<div class="ui-g" style="margin-top: 10px">
+						<p:fieldset legend="Thông tin chi tiết*" styleClass="noneformatfs"
+							style="width:92%; height:300px" id="fieldsetSoLuong">
+							<h:panelGrid columns="2" styleClass="noneformat" cellspacing="5"
+								columnClasses="w50,w50" style="width:100%">
+								<p:outputLabel value="Tổng số lượng suất ăn: " />
+								<p:spinner value="#{baoCaoBean.quantitySelected.tongsuatan}"
+									min="0" readonly="true" />
+							</h:panelGrid>
+							<h:panelGrid columns="2" styleClass="noneformat" cellspacing="5"
+								columnClasses="w50,w50" style="width:100%">
+								<p:outputLabel value="Số lượng suất ăn đã đăng ký: " />
+								<p:spinner value="#{baoCaoBean.quantitySelected.suatandadangky}"
+									min="0" readonly="true" />
+							</h:panelGrid>
+							<h:panelGrid columns="2" styleClass="noneformat" cellspacing="5"
+								columnClasses="w50,w50" style="width:100%">
+								<p:outputLabel value="Số lượng suất ăn đăng ký thêm: " />
+								<p:spinner
+									value="#{baoCaoBean.quantitySelected.tongsuatandkthem}" min="0"
+									readonly="true" />
+							</h:panelGrid>
+							<h:panelGrid columns="2" styleClass="noneformat" cellspacing="5"
+								columnClasses="w50,w50" style="width:100%">
+								<p:outputLabel value="Số lượng suất ăn mặn*: " />
+								<p:spinner id="basic"
+									value="#{baoCaoBean.quantitySelected.suatanman}"
+									max="#{baoCaoBean.quantitySelected.tongsuatandkthem}"
+									required="true">
+									<p:ajax event="change" process="@this"
+										listener="#{baoCaoBean.handleAjaxChangeInputMonMan()}"
+										update="panelGridMonChay" />
+								</p:spinner>
+							</h:panelGrid>
+							<h:panelGrid columns="2" styleClass="noneformat" cellspacing="5"
+								columnClasses="w50,w50" style="width:100%" id="panelGridMonChay">
+								<p:outputLabel value="Số lượng suất ăn chay: " />
+								<p:spinner value="#{baoCaoBean.quantitySelected.suatanchay}"
+									min="0" readonly="true" />
+							</h:panelGrid>
+
+							<p:commandButton style="margin-top:20px" styleClass="btsearch"
+								type="submit" value="Lưu/cập nhật"
+								action="#{baoCaoBean.updateSuatAnChinhXac()}" />
+						</p:fieldset>
+						<p:fieldset legend="Suất ăn khách*" styleClass="noneformatfs"
+							style="width:92%; height:80px" id="fieldsetComKhach">
+							<h:panelGrid columns="2" styleClass="noneformat" cellspacing="5"
+								columnClasses="w50,w50" style="width:100%"
+								id="panelGridComKhach">
+								<p:outputLabel value="Số lượng suất ăn của khách*: " />
+								<p:commandLink action="#{baoCaoBean.handleShowFoodCustomer()}"
+									process="@this" value="Chỉnh sửa"
+									update=":formFoodCustomer:idtableinput"
+									style="text-align:center;text-decoration: underline" />
+							</h:panelGrid>
+						</p:fieldset>
+					</div>
+				</div>
+			</p:fieldset>
+
+			<!-- TONG HOP SO CHENH LECH -->
+			<p:fieldset rendered="#{baoCaoBean.checkedRenderView[6]}"
+				style="height: 330px">
+				<div class="
+				ui-g" style="width: 100%">
+					<h3>Báo cáo tổng hợp chênh lệch suất ăn chính xác và thực tế</h3>
+				</div>
+				<div class="ui-g">
+					<p:separator style="width:100%;float:left" />
+				</div>
+				<div class="ui-g-9" style="margin-left: 10%">
+					<div class="ui-g-3">
+						<p:fieldset id="fieldsetFromDateChenhLech" legend="Từ ngày:"
+							styleClass="noneformatfs" style=" height:60px">
+							<p:calendar styleClass="stwidth" locale="vi"
+								value="#{baoCaoBean.fromDateAte}"
+								id="dateSearchFromDateChenhLech"
+								pattern="#{applicationBean.cf.formatDate}"
+								showButtonPanel="true" navigator="true"
+								mask="#{applicationBean.cf.maskDate}" />
+						</p:fieldset>
+					</div>
+					<div class="ui-g-3">
+						<p:fieldset id="fieldsetToDateChenhLech" legend="Đến ngày:"
+							styleClass="noneformatfs" style=" height:60px">
+							<p:calendar styleClass="stwidth" locale="vi"
+								value="#{baoCaoBean.toDateAte}" id="dateSearchToDateChenhLech"
+								pattern="#{applicationBean.cf.formatDate}"
+								showButtonPanel="true" navigator="true"
+								mask="#{applicationBean.cf.maskDate}" />
+						</p:fieldset>
+					</div>
+					<div class="ui-g-6">
+						<p:fieldset
+							style=" width:80%;margin-left:4%;height:50px;margin-top:10px"
+							styleClass="noneformatfs">
+							<p:commandButton style="float:right;margin-top:10px"
+								styleClass="btsearch" type="submit" value="Xuất PDF"
+								ajax="false" actionListener="#{baoCaoBean.baoCaoChenhLech()}"
+								onclick="this.form.target='_blank'" />
+						</p:fieldset>
+					</div>
+				</div>
+			</p:fieldset>
 		</h:form>
+		<!-- DIALOG HANDLE SHOW CHI TIET -->
+		<p:dialog widgetVar="wdvDialogFoodCustomer" width="800" height="400"
+			resizable="false" closeOnEscape="true"
+			header="Chi tiết suất ăn (khách)" id="idDialogFoodCustomer">
+			<h:form id="formFoodCustomer" style="margin-top:10px">
+				<p:dataTable var="item" styleClass="tableformat1" editable="true"
+					editMode="cell" value="#{baoCaoBean.foodCustomersByQuantityFood}"
+					resizableColumns="true" rowIndexVar="stt" id="idtableinput">
+					<f:facet name="header">
+						<div style="float: right">
+							<p:commandButton type="submit" styleClass="btsave" value="Thêm"
+								process="@form" action="#{baoCaoBean.addNewRowFoodCustomer()}"
+								icon="ui-icon-plus" update=":formFoodCustomer:idtableinput" />
+							<p:commandButton type="submit" styleClass="btsearch"
+								value="Cập nhật"
+								actionListener="#{baoCaoBean.updateFoodCustomer()}"
+								icon="ui-icon-arrowthick-1-ne" />
+						</div>
+						<div style="clear: both;" />
+					</f:facet>
+					<p:column headerText="STT" style="text-align:center" width="40">
+						<h:outputText value="#{stt+1}" />
+					</p:column>
+					<p:column headerText="Tên món ăn" width="150"
+						style="text-align:center">
+						<p:cellEditor>
+							<f:facet name="output">
+								<h:outputText value="#{item.foodName}" />
+							</f:facet>
+							<f:facet name="input">
+								<p:inputTextarea value="#{item.foodName}" rows="4"
+									autoResize="false">
+									<p:ajax process="@this" />
+								</p:inputTextarea>
+							</f:facet>
+						</p:cellEditor>
+					</p:column>
+					<p:column headerText="Giá" width="150" style="text-align:center">
+						<p:cellEditor>
+							<f:facet name="output">
+								<h:outputText value="#{item.price}">
+								</h:outputText>
+							</f:facet>
+							<f:facet name="input">
+								<p:inputTextarea value="#{item.price}" rows="4"
+									autoResize="false">
+									<p:ajax process="@this" />
+								</p:inputTextarea>
+							</f:facet>
+						</p:cellEditor>
+					</p:column>
+					<p:column headerText="Số lượng" width="50"
+						style="text-align:center">
+						<p:cellEditor>
+							<f:facet name="output">
+								<h:outputText value="#{item.quantity}" />
+							</f:facet>
+							<f:facet name="input">
+								<p:inputTextarea value="#{item.quantity}" rows="4"
+									autoResize="false">
+									<p:ajax process="@this" />
+								</p:inputTextarea>
+							</f:facet>
+						</p:cellEditor>
+					</p:column>
+					<p:column headerText="Xóa" width="30">
+						<center>
+							<p:commandLink action="#{baoCaoBean.deleteRowFoodCustomer(item)}"
+								process="@this" value=""
+								style="text-align:center;text-decoration: underline"
+								update="idtableinput">
+								<h:outputText style="color:red;font-size:15px"
+									class="fa fa-fw fa-remove" />
+							</p:commandLink>
+						</center>
+					</p:column>
+				</p:dataTable>
+			</h:form>
+		</p:dialog>
 	</ui:define>
 </ui:composition>
